@@ -28,28 +28,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Contact Form Handling
-const contactForm = document.querySelector('.contact-form');
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            message: document.getElementById('message').value
-        };
-        
-        // Display success message (in a real app, this would send to a server)
-        alert(`Thank you for your message, ${formData.name}! We'll get back to you soon.`);
-        
-        // Reset form
-        contactForm.reset();
-    });
-}
-
-// Add animation on scroll
+// Scroll animations using Intersection Observer
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
@@ -58,26 +37,70 @@ const observerOptions = {
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
             entry.target.style.opacity = '1';
             entry.target.style.transform = 'translateY(0)';
         }
     });
 }, observerOptions);
 
-// Observe feature cards
-document.querySelectorAll('.feature-card').forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(card);
+// Observe all cards for animation
+const animatedElements = document.querySelectorAll(
+    '.step-card, .feature-card, .testimonial-card, .science-card, .stat-card, .result-item, .different-card'
+);
+
+animatedElements.forEach(element => {
+    element.style.opacity = '0';
+    element.style.transform = 'translateY(20px)';
+    element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(element);
 });
 
-// Add header shadow on scroll
+// Enhanced header shadow on scroll
 const header = document.querySelector('.header');
+let lastScroll = 0;
+
 window.addEventListener('scroll', () => {
-    if (window.scrollY > 100) {
-        header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+    const currentScroll = window.pageYOffset;
+    
+    if (currentScroll > 100) {
+        header.style.boxShadow = '0 2px 20px rgba(0, 204, 204, 0.3)';
     } else {
-        header.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+        header.style.boxShadow = '0 2px 10px rgba(0, 204, 204, 0.1)';
     }
+    
+    lastScroll = currentScroll;
 });
+
+// Button click handlers (placeholder - replace with actual functionality)
+const ctaButtons = document.querySelectorAll('.btn-primary');
+ctaButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        // Placeholder for CTA action
+        console.log('CTA clicked - redirect to app or sign up page');
+        // window.location.href = 'https://app.claritytalk.com/signup';
+    });
+});
+
+const secondaryButtons = document.querySelectorAll('.btn-secondary');
+secondaryButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        // Placeholder for secondary action
+        console.log('Secondary CTA clicked - show demo or scroll to how it works');
+        const howItWorks = document.querySelector('#how-it-works');
+        if (howItWorks) {
+            howItWorks.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+
+// Add gradient animation to hero section
+const hero = document.querySelector('.hero');
+if (hero) {
+    let hue = 0;
+    setInterval(() => {
+        hue = (hue + 0.5) % 360;
+        // Subtle hue shift for visual interest
+        hero.style.filter = `hue-rotate(${hue}deg)`;
+    }, 100);
+}
