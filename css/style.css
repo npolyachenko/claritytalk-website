@@ -795,3 +795,12 @@ body {
     filter: none !important;
     mix-blend-mode: normal !important;
 }
+
+/* Force navigation link colors - override browser defaults */
+.nav-menu a {
+    color: var(--text-white) !important;
+}
+
+.nav-menu a:hover {
+    color: var(--primary-teal) !important;
+}
