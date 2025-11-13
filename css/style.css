@@ -707,7 +707,21 @@ body {
     }
 }
 
-/* Logo Icon Styling */
+    .logo-icon {
+        width: 30px;
+        height: 30px;
+    }
+    
+
+
+@media (max-width: 768px) {
+    .footer-logo {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Logo Icon Styling - Remove white background */
 .nav-brand {
     display: flex;
     align-items: center;
@@ -718,6 +732,19 @@ body {
     width: 40px;
     height: 40px;
     object-fit: contain;
+    /* Remove white background using blend mode */
+    mix-blend-mode: screen;
+    filter: brightness(1.1);
+}
+
+/* Footer Logo - Remove white background */
+.footer-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    mix-blend-mode: screen;
+    filter: brightness(1.1);
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 768px) {
@@ -729,6 +756,11 @@ body {
     .nav-brand h1 {
         font-size: 1.5rem;
     }
+    
+    .footer-logo {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -739,20 +771,5 @@ body {
     
     .nav-brand h1 {
         font-size: 1.25rem;
-    }
-}
-
-/* Footer Logo */
-.footer-logo {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-    margin-bottom: 1rem;
-}
-
-@media (max-width: 768px) {
-    .footer-logo {
-        width: 40px;
-        height: 40px;
     }
 }
