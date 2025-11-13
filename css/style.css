@@ -773,3 +773,25 @@ body {
         font-size: 1.25rem;
     }
 }
+
+/* Logo Icon Styling - Override previous */
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 8px;
+    /* Remove filters */
+    filter: none !important;
+    mix-blend-mode: normal !important;
+}
+
+.footer-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    /* Remove filters */
+    filter: none !important;
+    mix-blend-mode: normal !important;
+}
