@@ -1029,3 +1029,15 @@ body {
     animation: none !important;
     color: var(--text-white);
 }
+
+/* Change primary button to orange */
+.btn-primary {
+    background-color: var(--primary-orange) !important;
+    color: var(--bg-black) !important;
+    border-color: var(--primary-orange) !important;
+}
+
+.btn-primary:hover {
+    background-color: #FFB347 !important;
+    box-shadow: 0 10px 30px rgba(255, 153, 51, 0.5) !important;
+}
