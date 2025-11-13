@@ -804,3 +804,218 @@ body {
 .nav-menu a:hover {
     color: var(--primary-teal) !important;
 }
+
+/* Enhanced Interactive Effects - Mistikist Style */
+
+/* Card Hover Effects with Glow */
+.feature-card,
+.step-card,
+.science-card,
+.testimonial-card,
+.different-card {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-card:hover,
+.step-card:hover,
+.science-card:hover,
+.different-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 204, 204, 0.3);
+}
+
+.testimonial-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(255, 153, 51, 0.3);
+}
+
+/* Button Hover Effects with Scale and Glow */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-3px) scale(1.05);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 10px 30px rgba(0, 204, 204, 0.5);
+}
+
+.btn-secondary:hover {
+    box-shadow: 0 10px 30px rgba(255, 153, 51, 0.5);
+}
+
+/* Stat Number Count Animation */
+.stat-number {
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-number {
+    transform: scale(1.1);
+    color: var(--primary-orange);
+}
+
+/* Feature Icons Pulse Animation */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.feature-card:hover .feature-icon,
+.step-card:hover .step-icon,
+.science-card:hover .science-icon {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Gradient Background Animation for Hero */
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.hero {
+    background: linear-gradient(-45deg, #FF9933, #FF6633, #00CCCC, #00AACC);
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+}
+
+/* Scroll Progress Bar */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-orange) 0%, var(--primary-teal) 100%);
+    z-index: 9999;
+    transition: width 0.1s ease;
+}
+
+/* Section Title Underline Effect */
+.section-title::after,
+.section-title-light::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--gradient-stress-harmony);
+    margin: 1rem auto 0;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.section-title:hover::after,
+.section-title-light:hover::after {
+    width: 100px;
+}
+
+/* Nav Menu Hover Effect */
+.nav-menu li {
+    position: relative;
+}
+
+.nav-menu li::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-teal);
+    transition: width 0.3s ease;
+}
+
+.nav-menu li:hover::after {
+    width: 100%;
+}
+
+/* Floating Animation for Images */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.result-item:hover {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Glowing Border Effect on Focus */
+.btn:focus,
+.feature-card:focus-within,
+.testimonial-card:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 204, 204, 0.4);
+}
+
+/* Text Gradient Animation */
+@keyframes text-shimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.hero-title {
+    background: linear-gradient(90deg, #FFFFFF 30%, var(--primary-teal) 50%, #FFFFFF 70%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: text-shimmer 3s linear infinite;
+}
+
+/* Card Stagger Animation */
+.features-grid .feature-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.features-grid .feature-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.features-grid .feature-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.features-grid .feature-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
