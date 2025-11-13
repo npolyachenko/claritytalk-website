@@ -1019,3 +1019,13 @@ body {
 .features-grid .feature-card:nth-child(4) {
     animation-delay: 0.4s;
 }
+
+/* Override: Remove gradient from hero title */
+.hero-title {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
+    animation: none !important;
+    color: var(--text-white);
+}
