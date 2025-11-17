@@ -28,6 +28,7 @@ build/
 # Temporary files
 *.tmp
 *.temp
+server/temp/
 
 # Environment variables
 .env

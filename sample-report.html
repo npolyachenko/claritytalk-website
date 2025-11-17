@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ClarityTalk - Sample Conversation Analysis Report">
+    <title>Sample Report - ClarityTalk</title>
+    <link rel="icon" type="image/png" href="images/Icon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/emotion-styles.css">
+    <style>
+        /* Sample Report Specific Styles */
+        .report-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 20px;
+            background-color: var(--bg-black);
+            min-height: 100vh;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid rgba(0, 204, 204, 0.3);
+        }
+
+        .report-title {
+            font-size: 2.5rem;
+            background: var(--gradient-stress-harmony);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .report-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        .report-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: var(--primary-teal);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            font-size: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 153, 51, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-orange);
+        }
+
+        .speaker-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .speaker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .speaker-name {
+            font-size: 1.3rem;
+            color: var(--text-white);
+            font-weight: 600;
+        }
+
+        .speaker-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .speaker-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .speaker-stat-label {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .speaker-stat-value {
+            color: var(--primary-teal);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-stress-harmony);
+            transition: width 0.3s ease;
+        }
+
+        .word-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .word-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            color: var(--text-gray);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .word-tag:hover {
+            color: var(--primary-teal);
+        }
+
+        .word-tag.large {
+            font-size: 1.1rem;
+            color: var(--primary-orange);
+            font-weight: 600;
+        }
+
+        .word-tag.large:hover {
+            color: #FFB347;
+        }
+
+        .word-tag.medium {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .word-tag.small {
+            font-size: 0.9rem;
+        }
+
+        .recommendation-card {
+            background: rgba(0, 204, 204, 0.1);
+            border-left: 4px solid var(--primary-teal);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-title {
+            color: var(--primary-teal);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation-text {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--primary-orange);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #FFB347;
+        }
+
+        .metric-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .metric-good {
+            background: rgba(0, 204, 204, 0.2);
+            color: var(--primary-teal);
+        }
+
+        .metric-warning {
+            background: rgba(255, 153, 51, 0.2);
+            color: var(--primary-orange);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="container">
+                <div class="nav-brand">
+                    <img src="images/Icon.png" alt="ClarityTalk Logo" class="logo-icon">
+                    <h1>ClarityTalk</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#science">The Science</a></li>
+                    <li><a href="index.html#about">About Us</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="report-container">
+        <div class="report-header">
+            <h1 class="report-title">Sample Conversation Analysis Report</h1>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-icon">📊</span>
+                Overview
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+                <div class="stat-box" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 153, 51, 0.2); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                    <div class="stat-label" style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">🌍 Language</div>
+                    <div class="stat-value" style="font-size: 1.2rem; font-weight: 700; color: var(--primary-orange);">English</div>
+                </div>
+                <div class="stat-box" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 153, 51, 0.2); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                    <div class="stat-label" style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">⏱️ Duration</div>
+                    <div class="stat-value" style="font-size: 1.2rem; font-weight: 700; color: var(--primary-orange);">8:34</div>
+                </div>
+                <div class="stat-box" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 153, 51, 0.2); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                    <div class="stat-label" style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">💬 Words</div>
+                    <div class="stat-value" style="font-size: 1.2rem; font-weight: 700; color: var(--primary-orange);">1,247</div>
+                </div>
+                
+                <div class="stat-box" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 153, 51, 0.2); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                    <div class="stat-label" style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">🎯 Primary Emotion</div>
+                    <div class="stat-value" style="font-size: 1rem; font-weight: 700; color: var(--primary-orange);">Determination (42%)</div>
+                </div>
+                <div class="stat-box" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 153, 51, 0.2); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                    <div class="stat-label" style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Emotional Tone</div>
+                    <div class="stat-value" style="font-size: 1.2rem; font-weight: 700; color: var(--primary-orange);">😐 Neutral</div>
+                </div>
+                <div class="stat-box" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 153, 51, 0.2); border-radius: 12px; padding: 1.5rem;">
+                    <div class="stat-label" style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; text-align: center;">💬 Most Repeated</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center;">
+                        <span class="word-tag large" style="margin: 0.25rem;">understand (23)</span>
+                        <span class="word-tag medium" style="margin: 0.25rem;">feel (18)</span>
+                        <span class="word-tag medium" style="margin: 0.25rem;">think (16)</span>
+                        <span class="word-tag small" style="margin: 0.25rem;">important (12)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Speaker Analysis -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-icon">👥</span>
+                Speaker Analysis
+            </h2>
+            
+            <!-- Speaker 1 -->
+            <div class="speaker-card">
+                <div class="speaker-header">
+                    <span class="speaker-name">Speaker 1</span>
+                </div>
+                <div class="speaker-stats">
+                    <div class="speaker-stat">
+                        <span class="speaker-stat-label">Words Spoken</span>
+                        <span class="speaker-stat-value">687 (55%)</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 55%"></div>
+                        </div>
+                    </div>
+                    <div class="speaker-stat">
+                        <span class="speaker-stat-label">Speech Rate</span>
+                        <span class="speaker-stat-value">105% <span class="metric-indicator metric-good">Normal</span></span>
+                    </div>
+                    <div class="speaker-stat">
+                        <span class="speaker-stat-label">Volume Level</span>
+                        <span class="speaker-stat-value">98% <span class="metric-indicator metric-good">Normal</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Speaker 2 -->
+            <div class="speaker-card">
+                <div class="speaker-header">
+                    <span class="speaker-name">Speaker 2</span>
+                </div>
+                <div class="speaker-stats">
+                    <div class="speaker-stat">
+                        <span class="speaker-stat-label">Words Spoken</span>
+                        <span class="speaker-stat-value">560 (45%)</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    <div class="speaker-stat">
+                        <span class="speaker-stat-label">Speech Rate</span>
+                        <span class="speaker-stat-value">92% <span class="metric-indicator metric-good">Normal</span></span>
+                    </div>
+                    <div class="speaker-stat">
+                        <span class="speaker-stat-label">Volume Level</span>
+                        <span class="speaker-stat-value">85% <span class="metric-indicator metric-warning">Low</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Speech Metrics -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-icon">📈</span>
+                Speech Metrics
+            </h2>
+            <div class="speaker-stats">
+                <div class="speaker-stat">
+                    <span class="speaker-stat-label">Average Speech Rate</span>
+                    <span class="speaker-stat-value">99% of Normal <span class="metric-indicator metric-good">Optimal</span></span>
+                    <p style="color: var(--text-gray); font-size: 0.85rem; margin-top: 0.5rem;">
+                        Both speakers maintain a comfortable pace (140-160 words per minute)
+                    </p>
+                </div>
+                <div class="speaker-stat">
+                    <span class="speaker-stat-label">Average Volume Level</span>
+                    <span class="speaker-stat-value">92% of Normal <span class="metric-indicator metric-good">Good</span></span>
+                    <p style="color: var(--text-gray); font-size: 0.85rem; margin-top: 0.5rem;">
+                        Speaker 2 could benefit from speaking slightly louder
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-icon">💡</span>
+                Recommendations
+            </h2>
+            
+            <div class="recommendation-card">
+                <div class="recommendation-title">✓ Balance Turn-Taking</div>
+                <div class="recommendation-text">
+                    Speaker 1 dominated 55% of the conversation. Try to create more space for Speaker 2 to share their thoughts. Active listening and pause before responding can help achieve better balance.
+                </div>
+            </div>
+
+            <div class="recommendation-card">
+                <div class="recommendation-title">✓ Increase Volume Consistency</div>
+                <div class="recommendation-text">
+                    Speaker 2's volume is 15% below optimal. Speaking with more confidence and projection will ensure your message is heard clearly and carries more impact.
+                </div>
+            </div>
+
+            <div class="recommendation-card">
+                <div class="recommendation-title">✓ Reduce Repetition</div>
+                <div class="recommendation-text">
+                    The word "understand" was used 23 times. While empathy is important, varying your vocabulary (e.g., "comprehend," "grasp," "see your point") will make communication more engaging.
+                </div>
+            </div>
+
+            <div class="recommendation-card">
+                <div class="recommendation-title">✓ Maintain Emotional Connection</div>
+                <div class="recommendation-text">
+                    Great use of emotional language like "feel" and "together." Continue expressing emotions openly while also validating your partner's feelings to deepen connection.
+                </div>
+            </div>
+        </div>
+
+        <!-- Emotion TTS Demo -->
+        <div class="report-section" style="background: rgba(0, 204, 204, 0.05); border-color: var(--primary-teal);">
+            <h2 class="section-title">
+                <span class="section-icon">🎧</span>
+                Hear the Difference
+            </h2>
+            <p style="color: var(--text-gray); margin-bottom: 1.5rem;">
+                The same phrase spoken with different emotions. Select a phrase and click an emotion to hear:
+            </p>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: var(--text-gray); display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Choose a phrase:</label>
+                <select id="phrase-selector" style="width: 100%; padding: 0.75rem; background: rgba(0, 0, 0, 0.5); border: 2px solid rgba(0, 204, 204, 0.3); border-radius: 8px; color: var(--text-white); font-size: 1rem; cursor: pointer;">
+                    <option value="I understand this is important to you">I understand this is important to you</option>
+                    <option value="We need to talk about this">We need to talk about this</option>
+                    <option value="I hear what you're saying">I hear what you're saying</option>
+                    <option value="Let's work through this together">Let's work through this together</option>
+                    <option value="I appreciate you sharing that with me">I appreciate you sharing that with me</option>
+                </select>
+            </div>
+            
+            <div class="demo-phrase" id="current-phrase" style="font-size: 1.4rem; font-style: italic; color: var(--primary-orange); text-align: center; margin: 2rem 0; padding: 1.5rem; background: rgba(0, 0, 0, 0.3); border-radius: 12px; border-left: 4px solid var(--primary-orange);">
+                "I understand this is important to you"
+            </div>
+            <div class="emotion-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 2rem 0;">
+                <button data-emotion="calm" class="emotion-btn" style="padding: 1rem; background: rgba(0, 204, 204, 0.2); border: 2px solid var(--primary-teal); border-radius: 8px; color: var(--primary-teal); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    😌 Calm
+                </button>
+                <button data-emotion="irritated" class="emotion-btn" style="padding: 1rem; background: rgba(255, 153, 51, 0.2); border: 2px solid var(--primary-orange); border-radius: 8px; color: var(--primary-orange); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    😠 Irritated
+                </button>
+                <button data-emotion="anger" class="emotion-btn" style="padding: 1rem; background: rgba(255, 153, 51, 0.2); border: 2px solid var(--primary-orange); border-radius: 8px; color: var(--primary-orange); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    😡 Angry
+                </button>
+                <button data-emotion="loving" class="emotion-btn" style="padding: 1rem; background: rgba(0, 204, 204, 0.2); border: 2px solid var(--primary-teal); border-radius: 8px; color: var(--primary-teal); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    ❤️ Loving
+                </button>
+            </div>
+            <audio id="emotion-audio" controls style="display:none; width: 100%; margin-top: 2rem;"></audio>
+            <p style="color: var(--text-gray); font-size: 0.9rem; text-align: center; margin-top: 1.5rem;">
+                ℹ️ This demo uses Hume AI Octave — generation may take a few seconds.
+            </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="conversation-report.html" class="btn" style="background: var(--primary-teal); color: #000; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; display: inline-block; font-weight: 600; margin-right: 1rem;">
+                📁 Analyze Your Own Conversation
+            </a>
+            <a href="index.html" class="back-link">← Back to Home</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 ClarityTalk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/emotion-demo.js"></script>
+</body>
+</html>

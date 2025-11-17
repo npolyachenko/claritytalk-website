@@ -1,0 +1,337 @@
+2025-11-17 11:56:54,294 - INFO - ============================================================
+2025-11-17 11:56:54,294 - INFO - 🚀 ClarityTalk Python Service (Simplified)
+2025-11-17 11:56:54,294 - INFO - ============================================================
+2025-11-17 11:56:54,295 - INFO - 📍 Starting on: http://localhost:5001
+2025-11-17 11:56:54,295 - INFO - 🎤 Whisper: Will load on first request (lazy loading)
+2025-11-17 11:56:54,295 - INFO - 💡 This avoids slow startup time
+2025-11-17 11:56:54,295 - INFO - ============================================================
+2025-11-17 11:56:54,295 - INFO - 
+ * Serving Flask app 'python_service_simple'
+ * Debug mode: off
+2025-11-17 11:56:54,331 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.1.15:5001
+2025-11-17 11:56:54,332 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-17 11:57:07,614 - INFO - Request method: POST
+2025-11-17 11:57:07,616 - INFO - Request files: []
+2025-11-17 11:57:07,617 - INFO - Request form: []
+2025-11-17 11:57:07,617 - INFO - Content-Type: multipart/form-data; boundary=--------------------------f7c742300cbe0ccfcdf36a79
+2025-11-17 11:57:07,617 - ERROR - No 'audio' file in request. Files present: []
+2025-11-17 11:57:07,618 - INFO - 127.0.0.1 - - [17/Nov/2025 11:57:07] "[31m[1mPOST /analyze-full HTTP/1.1[0m" 400 -
+2025-11-17 11:57:49,498 - INFO - Request method: POST
+2025-11-17 11:57:49,501 - INFO - Request files: ['audio']
+2025-11-17 11:57:49,501 - INFO - Request form: []
+2025-11-17 11:57:49,501 - INFO - Content-Type: multipart/form-data; boundary=------------------------lwYewP6t14n8SB86HAj16n
+2025-11-17 11:57:49,502 - INFO - Full analysis for: audio1.m4a
+2025-11-17 11:57:49,502 - INFO - Loading Whisper model...
+2025-11-17 11:57:51,341 - INFO - ✓ Model loaded
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: Russian
+  0%|          | 0/524 [00:00<?, ?frames/s]100%|██████████| 524/524 [00:02<00:00, 218.21frames/s]100%|██████████| 524/524 [00:02<00:00, 218.17frames/s]
+2025-11-17 11:57:56,584 - INFO - ✓ Full analysis complete: 1 segments
+2025-11-17 11:57:56,585 - INFO - 127.0.0.1 - - [17/Nov/2025 11:57:56] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 11:59:59,468 - INFO - Request method: POST
+2025-11-17 11:59:59,470 - INFO - Request files: []
+2025-11-17 11:59:59,470 - INFO - Request form: []
+2025-11-17 11:59:59,470 - INFO - Content-Type: multipart/form-data; boundary=--------------------------46bc0cca9dcb9ec490f87272
+2025-11-17 11:59:59,470 - ERROR - No 'audio' file in request. Files present: []
+2025-11-17 11:59:59,471 - INFO - 127.0.0.1 - - [17/Nov/2025 11:59:59] "[31m[1mPOST /analyze-full HTTP/1.1[0m" 400 -
+2025-11-17 12:01:59,479 - INFO - Request method: POST
+2025-11-17 12:01:59,483 - INFO - Request files: ['audio']
+2025-11-17 12:01:59,484 - INFO - Request form: []
+2025-11-17 12:01:59,484 - INFO - Content-Type: multipart/form-data; boundary=--------------------------d4750c3148b24cd5c1d99a44
+2025-11-17 12:01:59,484 - INFO - Full analysis for: audio1.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: Russian
+  0%|          | 0/524 [00:00<?, ?frames/s]100%|██████████| 524/524 [00:02<00:00, 223.76frames/s]100%|██████████| 524/524 [00:02<00:00, 223.72frames/s]
+2025-11-17 12:02:03,461 - INFO - ✓ Full analysis complete: 1 segments
+2025-11-17 12:02:03,463 - INFO - 127.0.0.1 - - [17/Nov/2025 12:02:03] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:02:21,338 - INFO - Request method: POST
+2025-11-17 12:02:21,341 - INFO - Request files: ['audio']
+2025-11-17 12:02:21,341 - INFO - Request form: []
+2025-11-17 12:02:21,341 - INFO - Content-Type: multipart/form-data; boundary=--------------------------6a58fc890fe622eb821e7bda
+2025-11-17 12:02:21,341 - INFO - Full analysis for: audio1.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: Russian
+  0%|          | 0/524 [00:00<?, ?frames/s]100%|██████████| 524/524 [00:02<00:00, 236.75frames/s]100%|██████████| 524/524 [00:02<00:00, 236.72frames/s]
+2025-11-17 12:02:24,930 - INFO - ✓ Full analysis complete: 1 segments
+2025-11-17 12:02:24,932 - INFO - 127.0.0.1 - - [17/Nov/2025 12:02:24] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:03:10,927 - INFO - Request method: POST
+2025-11-17 12:03:10,930 - INFO - Request files: ['audio']
+2025-11-17 12:03:10,930 - INFO - Request form: []
+2025-11-17 12:03:10,930 - INFO - Content-Type: multipart/form-data; boundary=--------------------------bf449c5dc496a8efe4aa39d8
+2025-11-17 12:03:10,930 - INFO - Full analysis for: recording.webm
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: Russian
+  0%|          | 0/1140 [00:00<?, ?frames/s]100%|██████████| 1140/1140 [00:02<00:00, 454.52frames/s]100%|██████████| 1140/1140 [00:02<00:00, 454.39frames/s]
+2025-11-17 12:03:15,042 - INFO - ✓ Full analysis complete: 3 segments
+2025-11-17 12:03:15,044 - INFO - 127.0.0.1 - - [17/Nov/2025 12:03:15] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:07:00,579 - INFO - Request method: POST
+2025-11-17 12:07:00,584 - INFO - Request files: ['audio']
+2025-11-17 12:07:00,585 - INFO - Request form: []
+2025-11-17 12:07:00,585 - INFO - Content-Type: multipart/form-data; boundary=--------------------------95e9235ca8e4f66dbff4774a
+2025-11-17 12:07:00,585 - INFO - Full analysis for: recording.webm
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/1932 [00:00<?, ?frames/s]100%|██████████| 1932/1932 [00:02<00:00, 644.94frames/s]100%|██████████| 1932/1932 [00:02<00:00, 644.80frames/s]
+2025-11-17 12:07:05,975 - INFO - ✓ Full analysis complete: 2 segments
+2025-11-17 12:07:05,977 - INFO - 127.0.0.1 - - [17/Nov/2025 12:07:05] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:09:43,392 - INFO - Request method: POST
+2025-11-17 12:09:43,397 - INFO - Request files: ['audio']
+2025-11-17 12:09:43,398 - INFO - Request form: []
+2025-11-17 12:09:43,398 - INFO - Content-Type: multipart/form-data; boundary=--------------------------1e291c3a8610e396f6a9904a
+2025-11-17 12:09:43,398 - INFO - Full analysis for: recording.webm
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/1734 [00:00<?, ?frames/s]100%|██████████| 1734/1734 [00:03<00:00, 459.39frames/s]100%|██████████| 1734/1734 [00:03<00:00, 459.34frames/s]
+2025-11-17 12:09:49,204 - INFO - ✓ Full analysis complete: 5 segments
+2025-11-17 12:09:49,207 - INFO - 127.0.0.1 - - [17/Nov/2025 12:09:49] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:10:46,631 - INFO - Request method: POST
+2025-11-17 12:10:46,637 - INFO - Request files: ['audio']
+2025-11-17 12:10:46,637 - INFO - Request form: []
+2025-11-17 12:10:46,637 - INFO - Content-Type: multipart/form-data; boundary=--------------------------b859c5283fe8b94973a8f467
+2025-11-17 12:10:46,638 - INFO - Full analysis for: recording.webm
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/2220 [00:00<?, ?frames/s]100%|██████████| 2220/2220 [00:04<00:00, 527.93frames/s]100%|██████████| 2220/2220 [00:04<00:00, 527.89frames/s]
+2025-11-17 12:10:52,542 - INFO - ✓ Full analysis complete: 4 segments
+2025-11-17 12:10:52,543 - INFO - 127.0.0.1 - - [17/Nov/2025 12:10:52] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:14:21,490 - INFO - Request method: POST
+2025-11-17 12:14:21,499 - INFO - Request files: ['audio']
+2025-11-17 12:14:21,499 - INFO - Request form: []
+2025-11-17 12:14:21,500 - INFO - Content-Type: multipart/form-data; boundary=--------------------------357e3c7394463019baa3409b
+2025-11-17 12:14:21,500 - INFO - Full analysis for: recording.webm
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3114 [00:00<?, ?frames/s] 67%|██████▋   | 2100/3114 [00:02<00:01, 879.74frames/s]100%|██████████| 3114/3114 [00:04<00:00, 652.87frames/s]100%|██████████| 3114/3114 [00:04<00:00, 688.73frames/s]
+2025-11-17 12:14:27,882 - INFO - ✓ Full analysis complete: 2 segments
+2025-11-17 12:14:27,885 - INFO - 127.0.0.1 - - [17/Nov/2025 12:14:27] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:22:56,312 - INFO - Request method: POST
+2025-11-17 12:22:56,316 - INFO - Request files: ['audio']
+2025-11-17 12:22:56,317 - INFO - Request form: []
+2025-11-17 12:22:56,317 - INFO - Content-Type: multipart/form-data; boundary=--------------------------0f5e92f52964923dc488d556
+2025-11-17 12:22:56,317 - INFO - Full analysis for: audio1.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: Russian
+  0%|          | 0/524 [00:00<?, ?frames/s]100%|██████████| 524/524 [00:02<00:00, 238.08frames/s]100%|██████████| 524/524 [00:02<00:00, 238.05frames/s]
+2025-11-17 12:23:00,462 - INFO - ✓ Full analysis complete: 1 segments
+2025-11-17 12:23:00,464 - INFO - 127.0.0.1 - - [17/Nov/2025 12:23:00] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:23:48,463 - INFO - Request method: POST
+2025-11-17 12:23:48,468 - INFO - Request files: ['audio']
+2025-11-17 12:23:48,468 - INFO - Request form: []
+2025-11-17 12:23:48,468 - INFO - Content-Type: multipart/form-data; boundary=--------------------------efb55891b0334812e7d1b97c
+2025-11-17 12:23:48,468 - INFO - Full analysis for: audio1.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: Russian
+  0%|          | 0/524 [00:00<?, ?frames/s]100%|██████████| 524/524 [00:02<00:00, 214.39frames/s]100%|██████████| 524/524 [00:02<00:00, 214.33frames/s]
+2025-11-17 12:23:52,783 - INFO - ✓ Full analysis complete: 1 segments
+2025-11-17 12:23:52,785 - INFO - 127.0.0.1 - - [17/Nov/2025 12:23:52] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:25:00,726 - INFO - Request method: POST
+2025-11-17 12:25:00,734 - INFO - Request files: ['audio']
+2025-11-17 12:25:00,734 - INFO - Request form: []
+2025-11-17 12:25:00,734 - INFO - Content-Type: multipart/form-data; boundary=--------------------------126d5d008f3288eee96f4403
+2025-11-17 12:25:00,734 - INFO - Full analysis for: audio1.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: Russian
+  0%|          | 0/524 [00:00<?, ?frames/s]100%|██████████| 524/524 [00:01<00:00, 276.07frames/s]100%|██████████| 524/524 [00:01<00:00, 276.02frames/s]
+2025-11-17 12:25:04,373 - INFO - ✓ Full analysis complete: 1 segments
+2025-11-17 12:25:04,375 - INFO - 127.0.0.1 - - [17/Nov/2025 12:25:04] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:28:24,298 - INFO - Request method: POST
+2025-11-17 12:28:24,302 - INFO - Request files: ['audio']
+2025-11-17 12:28:24,303 - INFO - Request form: []
+2025-11-17 12:28:24,303 - INFO - Content-Type: multipart/form-data; boundary=--------------------------1fd7acad33724174710d5213
+2025-11-17 12:28:24,303 - INFO - Full analysis for: audio1.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: Russian
+  0%|          | 0/524 [00:00<?, ?frames/s]100%|██████████| 524/524 [00:02<00:00, 234.81frames/s]100%|██████████| 524/524 [00:02<00:00, 234.78frames/s]
+2025-11-17 12:28:28,095 - INFO - ✓ Full analysis complete: 1 segments
+2025-11-17 12:28:28,097 - INFO - 127.0.0.1 - - [17/Nov/2025 12:28:28] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:33:03,554 - INFO - Request method: POST
+2025-11-17 12:33:03,574 - INFO - Request files: ['audio']
+2025-11-17 12:33:03,574 - INFO - Request form: []
+2025-11-17 12:33:03,574 - INFO - Content-Type: multipart/form-data; boundary=--------------------------b44fdd84d90c48f2f6c07064
+2025-11-17 12:33:03,574 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 692.37frames/s]100%|██████████| 3980/3980 [00:06<00:00, 623.76frames/s]100%|██████████| 3980/3980 [00:06<00:00, 635.50frames/s]
+2025-11-17 12:33:11,712 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:33:11,715 - INFO - 127.0.0.1 - - [17/Nov/2025 12:33:11] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:36:14,942 - INFO - Request method: POST
+2025-11-17 12:36:14,955 - INFO - Request files: ['audio']
+2025-11-17 12:36:14,955 - INFO - Request form: []
+2025-11-17 12:36:14,955 - INFO - Content-Type: multipart/form-data; boundary=--------------------------ae8e67c8e68a93ed5dbdcd8c
+2025-11-17 12:36:14,955 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 738.38frames/s]100%|██████████| 3980/3980 [00:05<00:00, 651.15frames/s]100%|██████████| 3980/3980 [00:05<00:00, 665.82frames/s]
+2025-11-17 12:36:22,973 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:36:22,976 - INFO - 127.0.0.1 - - [17/Nov/2025 12:36:22] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:39:27,960 - INFO - Request method: POST
+2025-11-17 12:39:27,971 - INFO - Request files: ['audio']
+2025-11-17 12:39:27,971 - INFO - Request form: []
+2025-11-17 12:39:27,971 - INFO - Content-Type: multipart/form-data; boundary=--------------------------c69cff168177825f49462e54
+2025-11-17 12:39:27,971 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:02<00:01, 837.24frames/s]100%|██████████| 3980/3980 [00:05<00:00, 764.79frames/s]100%|██████████| 3980/3980 [00:05<00:00, 777.31frames/s]
+2025-11-17 12:39:34,657 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:39:34,659 - INFO - 127.0.0.1 - - [17/Nov/2025 12:39:34] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:42:45,665 - INFO - Request method: POST
+2025-11-17 12:42:45,674 - INFO - Request files: ['audio']
+2025-11-17 12:42:45,675 - INFO - Request form: []
+2025-11-17 12:42:45,675 - INFO - Content-Type: multipart/form-data; boundary=--------------------------7fab4907b7ea67fdc9402d2f
+2025-11-17 12:42:45,676 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:04<00:02, 589.77frames/s]100%|██████████| 3980/3980 [00:07<00:00, 532.75frames/s]100%|██████████| 3980/3980 [00:07<00:00, 542.52frames/s]
+2025-11-17 12:42:55,037 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:42:55,040 - INFO - 127.0.0.1 - - [17/Nov/2025 12:42:55] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:46:57,053 - INFO - Request method: POST
+2025-11-17 12:46:57,065 - INFO - Request files: ['audio']
+2025-11-17 12:46:57,066 - INFO - Request form: []
+2025-11-17 12:46:57,066 - INFO - Content-Type: multipart/form-data; boundary=--------------------------66d28ef0e720459d46bc476d
+2025-11-17 12:46:57,066 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 680.28frames/s]100%|██████████| 3980/3980 [00:06<00:00, 587.38frames/s]100%|██████████| 3980/3980 [00:06<00:00, 602.72frames/s]
+2025-11-17 12:47:05,507 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:47:05,510 - INFO - 127.0.0.1 - - [17/Nov/2025 12:47:05] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:49:04,349 - INFO - Request method: POST
+2025-11-17 12:49:04,361 - INFO - Request files: ['audio']
+2025-11-17 12:49:04,361 - INFO - Request form: []
+2025-11-17 12:49:04,361 - INFO - Content-Type: multipart/form-data; boundary=--------------------------1ac34c96a4fc28b7e3dca88f
+2025-11-17 12:49:04,361 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:01, 755.78frames/s]100%|██████████| 3980/3980 [00:05<00:00, 705.63frames/s]100%|██████████| 3980/3980 [00:05<00:00, 714.44frames/s]
+2025-11-17 12:49:11,804 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:49:11,806 - INFO - 127.0.0.1 - - [17/Nov/2025 12:49:11] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:50:03,167 - INFO - Request method: POST
+2025-11-17 12:50:03,185 - INFO - Request files: ['audio']
+2025-11-17 12:50:03,185 - INFO - Request form: []
+2025-11-17 12:50:03,185 - INFO - Content-Type: multipart/form-data; boundary=--------------------------af1d66a9d9f97babea9101f4
+2025-11-17 12:50:03,186 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:04<00:02, 581.73frames/s]100%|██████████| 3980/3980 [00:07<00:00, 534.86frames/s]100%|██████████| 3980/3980 [00:07<00:00, 543.01frames/s]
+2025-11-17 12:50:12,793 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:50:12,796 - INFO - 127.0.0.1 - - [17/Nov/2025 12:50:12] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:52:17,823 - INFO - Request method: POST
+2025-11-17 12:52:17,834 - INFO - Request files: ['audio']
+2025-11-17 12:52:17,835 - INFO - Request form: []
+2025-11-17 12:52:17,835 - INFO - Content-Type: multipart/form-data; boundary=--------------------------bdb5b21e7523e49ef88fdaff
+2025-11-17 12:52:17,835 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 715.16frames/s]100%|██████████| 3980/3980 [00:06<00:00, 645.50frames/s]100%|██████████| 3980/3980 [00:06<00:00, 657.44frames/s]
+2025-11-17 12:52:25,576 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:52:25,579 - INFO - 127.0.0.1 - - [17/Nov/2025 12:52:25] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:58:59,631 - INFO - Request method: POST
+2025-11-17 12:58:59,653 - INFO - Request files: ['audio']
+2025-11-17 12:58:59,653 - INFO - Request form: []
+2025-11-17 12:58:59,653 - INFO - Content-Type: multipart/form-data; boundary=--------------------------f74be2d36ebf571632357dbc
+2025-11-17 12:58:59,653 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:04<00:02, 579.09frames/s]100%|██████████| 3980/3980 [00:06<00:00, 597.60frames/s]100%|██████████| 3980/3980 [00:06<00:00, 594.02frames/s]
+2025-11-17 12:59:08,617 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:59:08,618 - INFO - 127.0.0.1 - - [17/Nov/2025 12:59:08] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 12:59:36,793 - INFO - Request method: POST
+2025-11-17 12:59:36,808 - INFO - Request files: ['audio']
+2025-11-17 12:59:36,809 - INFO - Request form: []
+2025-11-17 12:59:36,809 - INFO - Content-Type: multipart/form-data; boundary=--------------------------f5cfa66590b7525dffdd54d2
+2025-11-17 12:59:36,810 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 685.11frames/s]100%|██████████| 3980/3980 [00:06<00:00, 610.72frames/s]100%|██████████| 3980/3980 [00:06<00:00, 623.34frames/s]
+2025-11-17 12:59:44,940 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 12:59:44,946 - INFO - 127.0.0.1 - - [17/Nov/2025 12:59:44] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 13:00:30,932 - INFO - Request method: POST
+2025-11-17 13:00:30,943 - INFO - Request files: ['audio']
+2025-11-17 13:00:30,943 - INFO - Request form: []
+2025-11-17 13:00:30,943 - INFO - Content-Type: multipart/form-data; boundary=--------------------------33b37c2a8e48961153b8bbd3
+2025-11-17 13:00:30,943 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:04<00:02, 567.22frames/s]100%|██████████| 3980/3980 [00:07<00:00, 505.77frames/s]100%|██████████| 3980/3980 [00:07<00:00, 516.18frames/s]
+2025-11-17 13:00:40,461 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 13:00:40,463 - INFO - 127.0.0.1 - - [17/Nov/2025 13:00:40] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 13:03:37,142 - INFO - Request method: POST
+2025-11-17 13:03:37,159 - INFO - Request files: ['audio']
+2025-11-17 13:03:37,159 - INFO - Request form: []
+2025-11-17 13:03:37,159 - INFO - Content-Type: multipart/form-data; boundary=--------------------------654914f5c468e8cddec91eb8
+2025-11-17 13:03:37,160 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 718.51frames/s]100%|██████████| 3980/3980 [00:05<00:00, 681.26frames/s]100%|██████████| 3980/3980 [00:05<00:00, 687.90frames/s]
+2025-11-17 13:03:45,178 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 13:03:45,180 - INFO - 127.0.0.1 - - [17/Nov/2025 13:03:45] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 13:06:49,834 - INFO - Request method: POST
+2025-11-17 13:06:49,847 - INFO - Request files: ['audio']
+2025-11-17 13:06:49,847 - INFO - Request form: []
+2025-11-17 13:06:49,848 - INFO - Content-Type: multipart/form-data; boundary=--------------------------f0bb8ed979ccec038e563c38
+2025-11-17 13:06:49,848 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 694.98frames/s]100%|██████████| 3980/3980 [00:06<00:00, 630.61frames/s]100%|██████████| 3980/3980 [00:06<00:00, 641.67frames/s]
+2025-11-17 13:06:57,925 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 13:06:57,930 - INFO - 127.0.0.1 - - [17/Nov/2025 13:06:57] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 13:11:33,046 - INFO - Request method: POST
+2025-11-17 13:11:33,058 - INFO - Request files: ['audio']
+2025-11-17 13:11:33,059 - INFO - Request form: []
+2025-11-17 13:11:33,060 - INFO - Content-Type: multipart/form-data; boundary=--------------------------95e8fd1fecd425a8f1bb95da
+2025-11-17 13:11:33,062 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 655.05frames/s]100%|██████████| 3980/3980 [00:06<00:00, 605.92frames/s]100%|██████████| 3980/3980 [00:06<00:00, 614.51frames/s]
+2025-11-17 13:11:42,026 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 13:11:42,030 - INFO - 127.0.0.1 - - [17/Nov/2025 13:11:42] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 13:13:26,102 - INFO - Request method: POST
+2025-11-17 13:13:26,116 - INFO - Request files: ['audio']
+2025-11-17 13:13:26,117 - INFO - Request form: []
+2025-11-17 13:13:26,118 - INFO - Content-Type: multipart/form-data; boundary=--------------------------a818a11080cc39a751d44adb
+2025-11-17 13:13:26,118 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 680.33frames/s]100%|██████████| 3980/3980 [00:06<00:00, 599.90frames/s]100%|██████████| 3980/3980 [00:06<00:00, 613.43frames/s]
+2025-11-17 13:13:34,615 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 13:13:34,618 - INFO - 127.0.0.1 - - [17/Nov/2025 13:13:34] "POST /analyze-full HTTP/1.1" 200 -
+2025-11-17 13:16:18,403 - INFO - Request method: POST
+2025-11-17 13:16:18,416 - INFO - Request files: ['audio']
+2025-11-17 13:16:18,417 - INFO - Request form: []
+2025-11-17 13:16:18,417 - INFO - Content-Type: multipart/form-data; boundary=--------------------------a4633499c47ed6ad6edc4993
+2025-11-17 13:16:18,417 - INFO - Full analysis for: shit.m4a
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/whisper/transcribe.py:115: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+Detected language: English
+  0%|          | 0/3980 [00:00<?, ?frames/s] 62%|██████▏   | 2480/3980 [00:03<00:02, 626.32frames/s]100%|██████████| 3980/3980 [00:07<00:00, 547.21frames/s]100%|██████████| 3980/3980 [00:07<00:00, 560.41frames/s]
+2025-11-17 13:16:27,636 - INFO - ✓ Full analysis complete: 7 segments
+2025-11-17 13:16:27,639 - INFO - 127.0.0.1 - - [17/Nov/2025 13:16:27] "POST /analyze-full HTTP/1.1" 200 -

@@ -163,15 +163,15 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--primary-teal);
+    background-color: var(--primary-orange);
     color: var(--bg-black);
-    border-color: var(--primary-teal);
+    border-color: var(--primary-orange);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 204, 204, 0.4);
-    background-color: #00E5E5;
+    box-shadow: 0 8px 20px rgba(255, 153, 51, 0.4);
+    background-color: #FFB347;
 }
 
 .btn-secondary {
@@ -503,6 +503,67 @@ body {
     font-size: 1.1rem;
 }
 
+/* About Us Section */
+.about-us {
+    padding: 6rem 0;
+    background-color: var(--bg-black);
+}
+
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-content p {
+    font-size: 1.15rem;
+    line-height: 1.9;
+    color: var(--text-gray);
+    margin-bottom: 1.5rem;
+}
+
+.about-mission {
+    font-size: 1.3rem !important;
+    color: var(--primary-teal) !important;
+    font-weight: 600;
+    margin-top: 2rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.about-tagline {
+    font-size: 1.4rem !important;
+    background: var(--gradient-stress-harmony);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-top: 1.5rem !important;
+}
+
+.about-tagline strong {
+    font-weight: 700;
+}
+
+.about-contact {
+    font-size: 1.2rem !important;
+    color: var(--text-gray) !important;
+    margin-top: 3rem !important;
+    padding-top: 2rem !important;
+    border-top: 1px solid rgba(0, 204, 204, 0.2);
+    scroll-margin-top: 100px;
+}
+
+.email-link {
+    color: var(--primary-orange);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.email-link:hover {
+    color: #FFB347;
+    text-decoration: underline;
+}
+
 /* Final CTA */
 .final-cta {
     padding: 7rem 0;
@@ -728,6 +789,22 @@ body {
     gap: 0.75rem;
 }
 
+/* Bee Flying Animation Keyframes */
+@keyframes bee-fly {
+    0%, 100% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-8px) translateX(4px) rotate(3deg);
+    }
+    50% {
+        transform: translateY(-12px) translateX(0px) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-8px) translateX(-4px) rotate(-3deg);
+    }
+}
+
 .logo-icon {
     width: 40px;
     height: 40px;
@@ -783,6 +860,9 @@ body {
     /* Remove filters */
     filter: none !important;
     mix-blend-mode: normal !important;
+    /* Bee flying animation */
+    animation: bee-fly 3s ease-in-out infinite;
+    transform-origin: center;
 }
 
 .footer-logo {
@@ -804,6 +884,25 @@ body {
 .nav-menu a:hover {
     color: var(--primary-teal) !important;
 }
+
+/* Nav CTA button styles */
+.nav-menu a.nav-cta {
+    background-color: var(--primary-orange) !important;
+    color: var(--bg-black) !important;
+    border: 2px solid var(--primary-orange) !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 999px !important;
+    line-height: 1 !important;
+}
+
+.nav-menu a.nav-cta:hover {
+    background-color: #FFB347 !important;
+    border-color: #FFB347 !important;
+    color: var(--bg-black) !important;
+}
+
+/* Disable underline hover effect for CTA */
+.nav-menu a.nav-cta::after { display: none !important; }
 
 /* Enhanced Interactive Effects - Mistikist Style */
 
@@ -859,13 +958,7 @@ body {
     transform: translateY(-3px) scale(1.05);
 }
 
-.btn-primary:hover {
-    box-shadow: 0 10px 30px rgba(0, 204, 204, 0.5);
-}
-
-.btn-secondary:hover {
-    box-shadow: 0 10px 30px rgba(255, 153, 51, 0.5);
-}
+/* Remove conflicting hover styles - handled by btn-primary override at end */
 
 /* Stat Number Count Animation */
 .stat-number {

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Analyze your conversations with AI-powered insights">
+    <title>Analyze Your Conversation - ClarityTalk</title>
+    <link rel="icon" type="image/png" href="images/Icon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/emotion-styles.css">
+    <style>
+        /* Upload Section Styles */
+        .upload-hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 20px;
+            background: var(--bg-black);
+        }
+
+        .upload-container {
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .upload-title {
+            font-size: 2.5rem;
+            background: var(--gradient-stress-harmony);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .upload-subtitle {
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .upload-zone {
+            background: var(--card-bg);
+            border: 3px dashed var(--primary-teal);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary-orange);
+            background: rgba(0, 204, 204, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .upload-zone.drag-over {
+            border-color: var(--primary-orange);
+            background: rgba(255, 153, 51, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.3rem;
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        .upload-requirements {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: left;
+            margin-top: 2rem;
+        }
+
+        .upload-requirements h4 {
+            color: var(--primary-teal);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .requirements-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .requirements-list li {
+            color: var(--text-gray);
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .requirements-list li:before {
+            content: "✓";
+            color: var(--primary-teal);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .sample-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: var(--primary-orange);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .sample-link:hover {
+            color: #FFB347;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            display: none;
+            min-height: 60vh;
+            padding: 4rem 20px;
+            background: var(--bg-black);
+        }
+
+        .progress-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .progress-title {
+            font-size: 2rem;
+            color: var(--primary-teal);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* Animated Icon */
+        .progress-icon-container {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .progress-icon {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .icon-petal {
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 0 0 transparent);
+        }
+
+        .icon-petal.inactive {
+            fill: var(--primary-orange);
+            opacity: 0.6;
+        }
+
+        .icon-petal.active {
+            fill: url(#tealGradient);
+            opacity: 1;
+            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.6));
+            animation: petalPulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes petalPulse {
+            0%, 100% { 
+                opacity: 1;
+                filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.6));
+            }
+            50% { 
+                opacity: 0.85;
+                filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.8));
+            }
+        }
+
+        .progress-icon circle {
+            transition: all 1s ease;
+        }
+
+        .progress-icon circle.active {
+            fill: var(--primary-teal);
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.8));
+        }
+
+        .progress-steps {
+            margin: 3rem 0;
+        }
+
+        .progress-step {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-step.active {
+            opacity: 1;
+            border-color: var(--primary-teal);
+        }
+
+        .progress-step.completed {
+            opacity: 1;
+            border-color: var(--primary-orange);
+        }
+
+        .step-icon {
+            font-size: 2rem;
+            min-width: 3rem;
+            transition: all 0.8s ease;
+            filter: grayscale(0.8);
+        }
+
+        .progress-step.active .step-icon {
+            filter: grayscale(0) drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+            animation: brainPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes brainPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: grayscale(0) drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
+            }
+            50% {
+                transform: scale(1.1);
+                filter: grayscale(0) drop-shadow(0 0 20px rgba(0, 255, 255, 1));
+            }
+        }
+
+        .step-content {
+            text-align: left;
+            flex: 1;
+        }
+
+        .step-title {
+            color: var(--text-white);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-description {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-stress-harmony);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            background: var(--bg-black);
+            padding: 4rem 20px;
+        }
+
+        .results-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid rgba(0, 204, 204, 0.3);
+        }
+
+        .report-title {
+            font-size: 2.5rem;
+            background: var(--gradient-stress-harmony);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .report-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        .report-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: var(--primary-teal);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            font-size: 2rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-teal);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #00ffff;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Recording Section Styles */
+        .recording-zone {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+        }
+
+        .recording-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .record-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-orange);
+            background: rgba(255, 153, 51, 0.1);
+            color: var(--primary-orange);
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .record-btn:hover {
+            background: rgba(255, 153, 51, 0.2);
+            transform: scale(1.05);
+        }
+
+        .record-btn.recording {
+            background: var(--primary-orange);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .recording-timer {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-orange);
+            font-family: 'Courier New', monospace;
+        }
+
+        .recording-status {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        /* Word Cloud Styles */
+        .word-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .word-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            color: var(--text-gray);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .word-tag:hover {
+            color: var(--primary-teal);
+        }
+
+        .word-tag.large {
+            font-size: 1.1rem;
+            color: var(--primary-orange);
+            font-weight: 600;
+        }
+
+        .word-tag.large:hover {
+            color: #FFB347;
+        }
+
+        .word-tag.medium {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .word-tag.small {
+            font-size: 0.9rem;
+        }
+
+        /* Recommendation Card Styles */
+        .recommendation-card {
+            background: rgba(0, 204, 204, 0.05);
+            border-left: 4px solid var(--primary-teal);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-card:hover {
+            background: rgba(0, 204, 204, 0.1);
+            transform: translateX(5px);
+        }
+
+        .recommendation-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            margin-bottom: 0.75rem;
+        }
+
+        .recommendation-text {
+            color: var(--text-white);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .recording-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .recording-actions button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stop-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .stop-btn:hover {
+            background: #d32f2f;
+        }
+
+        .reset-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .audio-preview {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 204, 204, 0.2);
+        }
+
+        .audio-preview.active {
+            display: block;
+        }
+
+        .audio-preview audio {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .use-recording-btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            background: var(--primary-teal);
+            color: #000;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .use-recording-btn:hover {
+            background: #00ffff;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="container">
+                <div class="nav-brand">
+                    <img src="images/Icon.png" alt="ClarityTalk Logo" class="logo-icon">
+                    <h1>ClarityTalk</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#science">The Science</a></li>
+                    <li><a href="index.html#about">About Us</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Upload Section -->
+    <section class="upload-hero" id="upload-section">
+        <div class="upload-container">
+            <h1 class="upload-title">Analyze Your Conversation</h1>
+            <p class="upload-subtitle">
+                Record or upload a conversation and get AI-powered insights on communication patterns, emotional dynamics, and areas for growth.
+            </p>
+
+            <!-- Upload & Recording Zones -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; grid-auto-rows: 1fr; align-items: start;">
+                <!-- Recording Zone -->
+                <div class="recording-zone active" id="recording-zone" style="display: flex; flex-direction: column; justify-content: flex-start; border: 3px solid var(--primary-teal); padding: 3rem 2rem; height: 100%;">
+                <div class="recording-controls">
+                    <button class="record-btn" id="record-btn" title="Start Recording">
+                        🎤
+                    </button>
+                    <div class="recording-timer" id="recording-timer">00:00</div>
+                    <div class="recording-status" id="recording-status">Click the microphone to start recording</div>
+                    
+                    <div class="recording-actions" id="recording-actions" style="display: none;">
+                        <button class="stop-btn" id="stop-btn">⏹ Stop</button>
+                        <button class="reset-btn" id="reset-btn">🔄 Reset</button>
+                    </div>
+                </div>
+
+                <!-- Audio Preview -->
+                <div class="audio-preview" id="audio-preview">
+                    <h4 style="color: var(--primary-teal); margin-top: 0;">Preview Your Recording</h4>
+                    <audio id="audio-playback" controls></audio>
+                    <div class="preview-actions">
+                        <button class="reset-btn" id="re-record-btn">🎤 Record Again</button>
+                        <button class="use-recording-btn" id="use-recording-btn">✓ Use This Recording</button>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <div class="upload-zone" id="upload-zone" style="display: flex; flex-direction: column; justify-content: center; padding: 3rem 2rem; height: 100%;">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Click to upload or drag & drop</div>
+                    <div class="upload-hint">MP3, WAV, M4A (max 10MB)</div>
+                    <input type="file" accept="audio/*" id="audio-file-input" style="display: none;">
+                </div>
+            </div>
+
+            <div class="upload-requirements">
+                <h4>Tips for Better Results:</h4>
+                <ul class="requirements-list">
+                    <li>Clear audio quality helps improve accuracy</li>
+                    <li>Works with monologues and conversations</li>
+                    <li>Even 30 seconds can provide valuable insights</li>
+                </ul>
+            </div>
+
+            <a href="sample-report.html" class="sample-link">
+                → Not ready yet? See a sample report first
+            </a>
+        </div>
+    </section>
+
+    <!-- Progress Section -->
+    <section class="progress-section" id="progress-section">
+        <div class="progress-container">
+            <h2 class="progress-title">
+                <!-- Animated Icon -->
+                <div class="progress-icon-container">
+                    <svg class="progress-icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="tealGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00CCC0;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00FFFF;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Top petal (Upload) -->
+                        <path id="petal-1" class="icon-petal inactive" 
+                              d="M 512 180 C 450 150 380 140 320 180 C 260 220 240 280 270 350 C 300 420 370 460 450 470 C 490 460 520 440 530 410 C 540 380 535 345 520 315 C 515 285 512 240 512 180 Z" />
+                        <!-- Right petal (Processing) -->
+                        <path id="petal-2" class="icon-petal inactive" 
+                              d="M 844 512 C 874 450 884 380 844 320 C 804 260 744 240 674 270 C 604 300 564 370 554 450 C 564 490 584 520 614 530 C 644 540 679 535 709 520 C 739 515 784 512 844 512 Z" />
+                        <!-- Bottom petal (Analyzing) -->
+                        <path id="petal-3" class="icon-petal inactive" 
+                              d="M 512 844 C 574 874 644 884 704 844 C 764 804 784 744 754 674 C 724 604 654 564 574 554 C 534 564 504 584 494 614 C 484 644 489 679 504 709 C 509 739 512 784 512 844 Z" />
+                        <!-- Left petal (Generating) -->
+                        <path id="petal-4" class="icon-petal inactive" 
+                              d="M 180 512 C 150 574 140 644 180 704 C 220 764 280 784 350 754 C 420 724 460 654 470 574 C 460 534 440 504 410 494 C 380 484 345 489 315 504 C 285 509 240 512 180 512 Z" />
+                        <!-- Center circle -->
+                        <circle id="center-circle" cx="512" cy="512" r="80" fill="#555" />
+                    </svg>
+                </div>
+                Analyzing Your Conversation...
+            </h2>
+            
+            <div class="progress-steps">
+                <div class="progress-step" id="step-upload">
+                    <div class="step-icon">📤</div>
+                    <div class="step-content">
+                        <div class="step-title">Uploading</div>
+                        <div class="step-description">Preparing your audio file...</div>
+                    </div>
+                </div>
+
+                <div class="progress-step" id="step-processing">
+                    <div class="step-icon">🎵</div>
+                    <div class="step-content">
+                        <div class="step-title">Processing Audio</div>
+                        <div class="step-description">Analyzing voice patterns and emotions...</div>
+                    </div>
+                </div>
+
+                <div class="progress-step" id="step-analyzing">
+                    <div class="step-icon">🧠</div>
+                    <div class="step-content">
+                        <div class="step-title">Analyzing Communication</div>
+                        <div class="step-description">Detecting conversation dynamics...</div>
+                    </div>
+                </div>
+
+                <div class="progress-step" id="step-generating">
+                    <div class="step-icon">📊</div>
+                    <div class="step-content">
+                        <div class="step-title">Generating Report</div>
+                        <div class="step-description">Creating your personalized insights...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <p style="color: var(--text-gray); margin-top: 2rem; font-size: 0.9rem;">
+                ⏱️ This typically takes 1-2 minutes
+            </p>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section" id="results-section">
+        <div class="results-container">
+            <div class="report-header">
+                <h1 class="report-title">Your Conversation Analysis</h1>
+                <p class="report-subtitle" id="report-date">Analysis completed</p>
+            </div>
+
+            <!-- Overview Section -->
+            <div class="report-section" id="overview-section">
+                <h2 class="section-title">
+                    <span class="section-icon">📊</span>
+                    Overview
+                </h2>
+                <div id="overview-content"></div>
+            </div>
+
+            <!-- Transcription Section -->
+            <div class="report-section" id="transcription-section" style="display: none;">
+                <h2 class="section-title">
+                    <span class="section-icon">📝</span>
+                    Transcription
+                </h2>
+                <div id="transcription-content"></div>
+            </div>
+
+            <!-- Speaker Diarization Section -->
+            <div class="report-section" id="diarization-section" style="display: none;">
+                <h2 class="section-title">
+                    <span class="section-icon">👥</span>
+                    Speaker Identification
+                </h2>
+                <div id="diarization-content"></div>
+            </div>
+
+            <!-- Voice Analysis Section -->
+            <div class="report-section" id="voice-analysis-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🎤</span>
+                    Voice & Emotion Analysis
+                </h2>
+                <div id="voice-analysis-content"></div>
+            </div>
+
+            <!-- Recommendations Section -->
+            <div class="report-section" id="recommendations-section">
+                <h2 class="section-title">
+                    <span class="section-icon">💡</span>
+                    Recommendations
+                </h2>
+                <div id="recommendations-content"></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="location.reload()">
+                    Analyze Another Conversation
+                </button>
+                <a href="sample-report.html" class="btn btn-secondary">
+                    Compare with Sample Report
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 ClarityTalk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/conversation-analyzer.js"></script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+
+🚀 ClarityTalk API Server running on port 3001
+📡 TTS endpoint: http://localhost:3001/api/tts
+🎤 Hume emotion analysis: http://localhost:3001/api/analyze-voice
+📝 Whisper transcription: http://localhost:3001/api/transcribe
+👥 Speaker diarization: http://localhost:3001/api/diarize
+🔬 Full analysis: http://localhost:3001/api/analyze-full
+💚 Health check: http://localhost:3001/health
+
+[ANALYZE-FULL] Starting full analysis: audio1.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: audio1.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: recording.webm
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: recording.webm
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: recording.webm
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 0 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: recording.webm
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: recording.webm
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: audio1.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: audio1.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: audio1.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: audio1.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!
+[TTS] Generating speech with emotion: calm
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: irritated
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: anxious
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: loving
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: worried
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: irritated
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: worried
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: distressed
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: frustrated
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: anger
+[TTS] Text: "I understand this is important to you..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: loving
+[TTS] Text: "We need to talk about this..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: irritated
+[TTS] Text: "We need to talk about this..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: anger
+[TTS] Text: "We need to talk about this..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: loving
+[TTS] Text: "I appreciate you sharing that with me..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed
+[TTS] Generating speech with emotion: anger
+[TTS] Text: "I appreciate you sharing that with me..."
+[TTS] Stream initiated successfully
+[TTS] Stream completed

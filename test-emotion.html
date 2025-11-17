@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Emotion Analysis</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        button {
+            background: #00cccc;
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        button:hover {
+            background: #00ffff;
+        }
+        #log {
+            background: #000;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+        .log-entry {
+            margin: 0.25rem 0;
+        }
+        .log-error {
+            color: #ff6b6b;
+        }
+        .log-success {
+            color: #51cf66;
+        }
+        .log-info {
+            color: #74c0fc;
+        }
+        #emotion-results {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐛 Emotion Analysis Debug</h1>
+    
+    <div class="test-section">
+        <h2>Upload Audio File</h2>
+        <input type="file" accept="audio/*" id="audio-upload" style="display: none;">
+        <button id="analyze-btn">📁 Upload and Analyze</button>
+        
+        <div id="log">
+            <div class="log-entry log-info">Ready to test...</div>
+        </div>
+    </div>
+
+    <div id="emotion-results" style="display:none;"></div>
+
+    <script>
+        // Add comprehensive logging
+        const API_BASE_URL = 'http://localhost:3001';
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Test language detection
+        log(`Browser language: ${navigator.language}`, 'info');
+        
+        // Setup
+        const uploadInput = document.getElementById('audio-upload');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const resultsDiv = document.getElementById('emotion-results');
+
+        analyzeBtn.addEventListener('click', () => {
+            log('Upload button clicked', 'info');
+            uploadInput.click();
+        });
+
+        uploadInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) {
+                log('No file selected', 'error');
+                return;
+            }
+
+            log(`File selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`, 'success');
+
+            try {
+                // Show loading
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = '<p style="text-align:center;">⏳ Analyzing...</p>';
+                log('Starting analysis...', 'info');
+
+                // Create form data
+                const formData = new FormData();
+                formData.append('audio', file);
+                log('FormData created', 'info');
+
+                // Send request
+                log(`Sending request to: ${API_BASE_URL}/api/analyze-voice`, 'info');
+                const response = await fetch(`${API_BASE_URL}/api/analyze-voice`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                log(`Response status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`Error response: ${errorText}`, 'error');
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                log(`Response received: ${data.emotions?.length || 0} emotions detected`, 'success');
+                log(`Sample emotions: ${JSON.stringify(data.emotions?.slice(0, 3).map(e => e.name))}`, 'info');
+
+                // Display results
+                if (data.success && data.emotions && data.emotions.length > 0) {
+                    displayResults(data.emotions);
+                } else {
+                    throw new Error('No emotions detected in response');
+                }
+
+            } catch (error) {
+                log(`ERROR: ${error.message}`, 'error');
+                console.error('Full error:', error);
+                resultsDiv.innerHTML = `<p style="color: #ff6b6b;">❌ Error: ${error.message}</p>`;
+            }
+        });
+
+        function displayResults(emotions) {
+            log('Displaying results...', 'info');
+            
+            const top5 = emotions.slice(0, 5);
+            let html = '<h3 style="color: #00cccc;">Top 5 Emotions:</h3><ul>';
+            
+            top5.forEach(emotion => {
+                const percent = (emotion.score * 100).toFixed(1);
+                html += `<li><strong>${emotion.name}</strong>: ${percent}%</li>`;
+            });
+            
+            html += '</ul>';
+            resultsDiv.innerHTML = html;
+            log('Results displayed successfully', 'success');
+        }
+
+        // Test server connection on load
+        fetch(`${API_BASE_URL}/health`)
+            .then(r => r.json())
+            .then(data => {
+                log(`✓ Server connected: ${JSON.stringify(data)}`, 'success');
+            })
+            .catch(err => {
+                log(`✗ Server connection failed: ${err.message}`, 'error');
+            });
+    </script>
+</body>
+</html>

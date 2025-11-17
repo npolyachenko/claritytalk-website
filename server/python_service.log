@@ -1,0 +1,48 @@
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/pyannote/audio/core/io.py:43: UserWarning: torchaudio._backend.set_audio_backend has been deprecated. With dispatcher enabled, this function is no-op. You can remove the function call.
+  torchaudio.set_audio_backend("soundfile")
+INFO:__main__:Starting ClarityTalk Python Service...
+INFO:__main__:Loading models (this may take a minute)...
+INFO:__main__:Loading Whisper model...
+INFO:__main__:Whisper model loaded successfully
+INFO:__main__:Loading pyannote speaker diarization pipeline...
+WARNING:__main__:No HUGGINGFACE_TOKEN found. Speaker diarization will use fallback.
+INFO:__main__:============================================================
+INFO:__main__:🚀 ClarityTalk Python Service
+INFO:__main__:============================================================
+INFO:__main__:📍 Running on: http://localhost:5001
+INFO:__main__:🎤 Whisper model: ✓ Loaded
+INFO:__main__:👥 Speaker diarization: ✗ Not available
+INFO:__main__:============================================================
+ * Serving Flask app 'python_service'
+ * Debug mode: on
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.1.15:5001
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+/Users/npolyachenko/Library/Python/3.9/lib/python/site-packages/pyannote/audio/core/io.py:43: UserWarning: torchaudio._backend.set_audio_backend has been deprecated. With dispatcher enabled, this function is no-op. You can remove the function call.
+  torchaudio.set_audio_backend("soundfile")
+INFO:__main__:Starting ClarityTalk Python Service...
+INFO:__main__:Loading models (this may take a minute)...
+INFO:__main__:Loading Whisper model...
+INFO:__main__:Whisper model loaded successfully
+INFO:__main__:Loading pyannote speaker diarization pipeline...
+WARNING:__main__:No HUGGINGFACE_TOKEN found. Speaker diarization will use fallback.
+INFO:__main__:============================================================
+INFO:__main__:🚀 ClarityTalk Python Service
+INFO:__main__:============================================================
+INFO:__main__:📍 Running on: http://localhost:5001
+INFO:__main__:🎤 Whisper model: ✓ Loaded
+INFO:__main__:👥 Speaker diarization: ✗ Not available
+INFO:__main__:============================================================
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 115-658-273
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2025 11:48:05] "GET /health HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2025 11:49:35] "[31m[1mPOST /analyze-full HTTP/1.1[0m" 400 -
+/Applications/Xcode-15.4.0.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/multiprocessing/resource_tracker.py:216: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
