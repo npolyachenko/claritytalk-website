@@ -12,7 +12,28 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || PYTHON_SERVICE_URL + '';
+const HUGGINGFACE_TOKEN = process.env.HUGGINGFACE_TOKEN;
+
+// HuggingFace Whisper transcription function
+async function transcribeWithHuggingFace(audioBuffer) {
+  console.log('[HF-WHISPER] Starting transcription...');
+  
+  const response = await axios.post(
+    'https://api-inference.huggingface.co/models/openai/whisper-large-v3',
+    audioBuffer,
+    {
+      headers: {
+        'Authorization': `Bearer ${HUGGINGFACE_TOKEN}`,
+        'Content-Type': 'audio/mpeg'
+      },
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity
+    }
+  );
+  
+  console.log('[HF-WHISPER] Transcription complete');
+  return response.data;
+}
 
 // Initialize Hume AI client
 const humeClient = new HumeClient({
@@ -333,7 +354,7 @@ app.post('/api/diarize', upload.single('audio'), async (req, res) => {
 
 /**
  * POST /api/analyze-full
- * Full analysis: Whisper transcription + pyannote diarization + Hume emotion analysis
+ * Full analysis: HuggingFace Whisper transcription + Hume emotion analysis
  */
 app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
   try {
@@ -343,35 +364,19 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
 
     console.log(`[ANALYZE-FULL] Starting full analysis: ${req.file.originalname}`);
 
-    // Save to temp file first
-    const tempDir = path.join(__dirname, 'temp');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir);
+    // 1. Transcribe with HuggingFace Whisper API
+    let transcriptionData = null;
+    try {
+      const hfResult = await transcribeWithHuggingFace(req.file.buffer);
+      transcriptionData = {
+        text: hfResult.text || hfResult,
+        language: 'auto-detected'
+      };
+      console.log(`[ANALYZE-FULL] HuggingFace transcription complete`);
+    } catch (hfError) {
+      console.error('[ANALYZE-FULL] HuggingFace error:', hfError.message);
+      transcriptionData = { text: '', error: hfError.message };
     }
-    const tempFilePath = path.join(tempDir, `analyze-${Date.now()}-${req.file.originalname}`);
-    fs.writeFileSync(tempFilePath, req.file.buffer);
-
-    const FormData = require('form-data');
-    const form = new FormData();
-    form.append('audio', fs.createReadStream(tempFilePath), {
-      filename: req.file.originalname,
-      contentType: req.file.mimetype
-    });
-
-    // Call Python service for Whisper + pyannote using axios
-    const pythonResponse = await axios.post(PYTHON_SERVICE_URL + '/analyze-full', form, {
-      headers: form.getHeaders(),
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity
-    });
-
-    // Clean up temp file
-    if (fs.existsSync(tempFilePath)) {
-      fs.unlinkSync(tempFilePath);
-    }
-
-    const pythonData = pythonResponse.data;
-    console.log(`[ANALYZE-FULL] Python service complete`);
 
     // Also run Hume emotion analysis
     let humeData = null;
@@ -464,8 +469,8 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
     // Combine results
     const result = {
       success: true,
-      transcription: pythonData.transcription,
-      diarization: pythonData.diarization,
+      transcription: transcriptionData,
+      diarization: null, // Diarization not available without Python service
       emotion_analysis: humeData
     };
 
@@ -481,24 +486,12 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
   }
 });
 
-// Health check endpoint (includes Python service status)
+// Health check endpoint
 app.get('/health', async (req, res) => {
-  let pythonService = { reachable: false };
-  try {
-    const { data } = await axios.get(PYTHON_SERVICE_URL + '/health', { timeout: 3000 });
-    pythonService = {
-      reachable: true,
-      whisper_loaded: !!data.whisper_loaded,
-      diarization_loaded: !!data.diarization_loaded
-    };
-  } catch (e) {
-    // Python service not reachable
-  }
-
   res.json({ 
     status: 'ok',
     apiKeyConfigured: !!process.env.HUME_API_KEY,
-    pythonService
+    huggingfaceConfigured: !!process.env.HUGGINGFACE_TOKEN
   });
 });
 
@@ -507,25 +500,13 @@ app.listen(PORT, () => {
   console.log(`\n🚀 ClarityTalk API Server running on port ${PORT}`);
   console.log(`📡 TTS endpoint: http://localhost:${PORT}/api/tts`);
   console.log(`🎤 Hume emotion analysis: http://localhost:${PORT}/api/analyze-voice`);
-  console.log(`📝 Whisper transcription: http://localhost:${PORT}/api/transcribe`);
-  console.log(`👥 Speaker diarization: http://localhost:${PORT}/api/diarize`);
   console.log(`🔬 Full analysis: http://localhost:${PORT}/api/analyze-full`);
   console.log(`💚 Health check: http://localhost:${PORT}/health\n`);
   
-  if (!process.env.HUME_API_KEY || process.env.HUME_API_KEY === 'your_actual_api_key_here') {
-    console.warn('⚠️  WARNING: HUME_API_KEY is not configured. Please set it in server/.env file\n');
+  if (!process.env.HUME_API_KEY) {
+    console.warn('⚠️  WARNING: HUME_API_KEY is not configured\n');
   }
-
-  // Probe Python service and log capabilities
-  (async () => {
-    try {
-      const { data } = await axios.get(PYTHON_SERVICE_URL + '/health', { timeout: 3000 });
-      console.log(`🧠 Python service: reachable | Whisper: ${data.whisper_loaded ? '✓' : '✗'} | Diarization: ${data.diarization_loaded ? '✓' : '✗'}`);
-      if (!data.diarization_loaded) {
-        console.warn('⚠️  Pyannote diarization not available. Set HUGGINGFACE_TOKEN in server/.env and restart the Python service.');
-      }
-    } catch (err) {
-      console.warn('⚠️  Python service not reachable at http://localhost:5001. Start it with ./start_python_service.sh');
-    }
-  })();
+  if (!process.env.HUGGINGFACE_TOKEN) {
+    console.warn('⚠️  WARNING: HUGGINGFACE_TOKEN is not configured (needed for transcription)\n');
+  }
 });
