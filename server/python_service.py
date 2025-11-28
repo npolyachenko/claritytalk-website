@@ -12,6 +12,10 @@ from flask_cors import CORS
 import whisper
 from pyannote.audio import Pipeline
 import torch
+from dotenv import load_dotenv
+
+# Load environment from .env if present
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'), override=False)
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

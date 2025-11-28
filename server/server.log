@@ -175,3 +175,7 @@
 [TTS] Text: "I appreciate you sharing that with me..."
 [TTS] Stream initiated successfully
 [TTS] Stream completed
+[ANALYZE-FULL] Starting full analysis: shit.m4a
+[ANALYZE-FULL] Python service complete
+[ANALYZE-FULL] Hume complete: 48 emotions
+[ANALYZE-FULL] Complete!

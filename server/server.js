@@ -480,11 +480,24 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
   }
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
+// Health check endpoint (includes Python service status)
+app.get('/health', async (req, res) => {
+  let pythonService = { reachable: false };
+  try {
+    const { data } = await axios.get('http://localhost:5001/health', { timeout: 3000 });
+    pythonService = {
+      reachable: true,
+      whisper_loaded: !!data.whisper_loaded,
+      diarization_loaded: !!data.diarization_loaded
+    };
+  } catch (e) {
+    // Python service not reachable
+  }
+
   res.json({ 
     status: 'ok',
-    apiKeyConfigured: !!process.env.HUME_API_KEY
+    apiKeyConfigured: !!process.env.HUME_API_KEY,
+    pythonService
   });
 });
 
@@ -501,4 +514,17 @@ app.listen(PORT, () => {
   if (!process.env.HUME_API_KEY || process.env.HUME_API_KEY === 'your_actual_api_key_here') {
     console.warn('⚠️  WARNING: HUME_API_KEY is not configured. Please set it in server/.env file\n');
   }
+
+  // Probe Python service and log capabilities
+  (async () => {
+    try {
+      const { data } = await axios.get('http://localhost:5001/health', { timeout: 3000 });
+      console.log(`🧠 Python service: reachable | Whisper: ${data.whisper_loaded ? '✓' : '✗'} | Diarization: ${data.diarization_loaded ? '✓' : '✗'}`);
+      if (!data.diarization_loaded) {
+        console.warn('⚠️  Pyannote diarization not available. Set HUGGINGFACE_TOKEN in server/.env and restart the Python service.');
+      }
+    } catch (err) {
+      console.warn('⚠️  Python service not reachable at http://localhost:5001. Start it with ./start_python_service.sh');
+    }
+  })();
 });
