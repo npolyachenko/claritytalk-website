@@ -12,6 +12,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || PYTHON_SERVICE_URL + '';
 
 // Initialize Hume AI client
 const humeClient = new HumeClient({
@@ -263,7 +264,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
       contentType: req.file.mimetype
     });
 
-    const response = await fetch('http://localhost:5001/transcribe', {
+    const response = await fetch(PYTHON_SERVICE_URL + '/transcribe', {
       method: 'POST',
       body: form,
       headers: form.getHeaders()
@@ -306,7 +307,7 @@ app.post('/api/diarize', upload.single('audio'), async (req, res) => {
       contentType: req.file.mimetype
     });
 
-    const response = await fetch('http://localhost:5001/diarize', {
+    const response = await fetch(PYTHON_SERVICE_URL + '/diarize', {
       method: 'POST',
       body: form,
       headers: form.getHeaders()
@@ -358,7 +359,7 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
     });
 
     // Call Python service for Whisper + pyannote using axios
-    const pythonResponse = await axios.post('http://localhost:5001/analyze-full', form, {
+    const pythonResponse = await axios.post(PYTHON_SERVICE_URL + '/analyze-full', form, {
       headers: form.getHeaders(),
       maxContentLength: Infinity,
       maxBodyLength: Infinity
@@ -484,7 +485,7 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
 app.get('/health', async (req, res) => {
   let pythonService = { reachable: false };
   try {
-    const { data } = await axios.get('http://localhost:5001/health', { timeout: 3000 });
+    const { data } = await axios.get(PYTHON_SERVICE_URL + '/health', { timeout: 3000 });
     pythonService = {
       reachable: true,
       whisper_loaded: !!data.whisper_loaded,
@@ -518,7 +519,7 @@ app.listen(PORT, () => {
   // Probe Python service and log capabilities
   (async () => {
     try {
-      const { data } = await axios.get('http://localhost:5001/health', { timeout: 3000 });
+      const { data } = await axios.get(PYTHON_SERVICE_URL + '/health', { timeout: 3000 });
       console.log(`🧠 Python service: reachable | Whisper: ${data.whisper_loaded ? '✓' : '✗'} | Diarization: ${data.diarization_loaded ? '✓' : '✗'}`);
       if (!data.diarization_loaded) {
         console.warn('⚠️  Pyannote diarization not available. Set HUGGINGFACE_TOKEN in server/.env and restart the Python service.');

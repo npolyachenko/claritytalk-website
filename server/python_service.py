@@ -254,13 +254,15 @@ if __name__ == '__main__':
     
     load_models()
     
+    port = int(os.getenv('PORT', 5001))
+    
     logger.info("="*60)
     logger.info("🚀 ClarityTalk Python Service")
     logger.info("="*60)
-    logger.info(f"📍 Running on: http://localhost:5001")
+    logger.info(f"📍 Running on port: {port}")
     logger.info(f"🎤 Whisper model: {'✓ Loaded' if whisper_model else '✗ Failed'}")
     logger.info(f"👥 Speaker diarization: {'✓ Loaded' if diarization_pipeline else '✗ Not available'}")
     logger.info("="*60)
     
-    # Run Flask app
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    # Run Flask app (debug=False for production)
+    app.run(host='0.0.0.0', port=port, debug=False)
