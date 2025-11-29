@@ -116,9 +116,66 @@ def transcribe():
 def analyze_full():
     """
     Full analysis: transcription
-    Note: Speaker diarization not available with OpenAI API
+    Returns format expected by frontend
     """
-    return transcribe()
+    try:
+        if not client:
+            return jsonify({'error': 'OpenAI client not configured'}), 503
+        
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No audio file provided'}), 400
+        
+        audio_file = request.files['audio']
+        
+        # Save to temporary file
+        suffix = os.path.splitext(audio_file.filename or '.wav')[1] or '.wav'
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+            audio_file.save(temp_file.name)
+            temp_path = temp_file.name
+        
+        logger.info(f"Full analysis for: {audio_file.filename}")
+        
+        # Transcribe with OpenAI Whisper API
+        with open(temp_path, 'rb') as audio:
+            result = client.audio.transcriptions.create(
+                model='whisper-1',
+                file=audio,
+                response_format='verbose_json'
+            )
+        
+        # Clean up temp file
+        os.unlink(temp_path)
+        
+        logger.info(f"Transcription complete: {len(result.text)} chars")
+        
+        # Format segments
+        segments = []
+        if hasattr(result, 'segments') and result.segments:
+            for seg in result.segments:
+                segments.append({
+                    'start': seg['start'] if isinstance(seg, dict) else seg.start,
+                    'end': seg['end'] if isinstance(seg, dict) else seg.end,
+                    'text': seg['text'] if isinstance(seg, dict) else seg.text
+                })
+        
+        # Return in format expected by frontend
+        return jsonify({
+            'success': True,
+            'transcription': {
+                'text': result.text,
+                'language': getattr(result, 'language', None),
+                'segments': segments
+            },
+            'diarization': None,
+            'emotion_analysis': None
+        })
+    
+    except Exception as e:
+        logger.error(f"Full analysis error: {e}")
+        return jsonify({
+            'error': 'Analysis failed',
+            'details': str(e)
+        }), 500
 
 # Initialize client on module load for gunicorn
 init_client()
