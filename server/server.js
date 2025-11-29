@@ -5,34 +5,49 @@ const multer = require('multer');
 const { HumeClient } = require('hume');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
+const OpenAI = require('openai');
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const HUGGINGFACE_TOKEN = process.env.HUGGINGFACE_TOKEN;
 
-// HuggingFace Whisper transcription function
-async function transcribeWithHuggingFace(audioBuffer) {
-  console.log('[HF-WHISPER] Starting transcription...');
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// OpenAI Whisper transcription function
+async function transcribeWithOpenAI(audioBuffer, filename) {
+  console.log('[OPENAI-WHISPER] Starting transcription...');
   
-  const response = await axios.post(
-    'https://api-inference.huggingface.co/models/openai/whisper-large-v3-turbo',
-    audioBuffer,
-    {
-      headers: {
-        'Authorization': `Bearer ${HUGGINGFACE_TOKEN}`,
-        'Content-Type': 'audio/mpeg'
-      },
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity
-    }
-  );
+  // Create a temporary file
+  const tempDir = path.join(__dirname, 'temp');
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
+  const tempPath = path.join(tempDir, `whisper-${Date.now()}-${filename}`);
+  fs.writeFileSync(tempPath, audioBuffer);
   
-  console.log('[HF-WHISPER] Transcription complete');
-  return response.data;
+  try {
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(tempPath),
+      model: 'whisper-1',
+      response_format: 'verbose_json'
+    });
+    
+    console.log('[OPENAI-WHISPER] Transcription complete');
+    
+    // Clean up temp file
+    fs.unlinkSync(tempPath);
+    
+    return transcription;
+  } catch (error) {
+    // Clean up on error
+    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+    throw error;
+  }
 }
 
 // Initialize Hume AI client
@@ -354,7 +369,7 @@ app.post('/api/diarize', upload.single('audio'), async (req, res) => {
 
 /**
  * POST /api/analyze-full
- * Full analysis: HuggingFace Whisper transcription + Hume emotion analysis
+ * Full analysis: OpenAI Whisper transcription + Hume emotion analysis
  */
 app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
   try {
@@ -364,18 +379,19 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
 
     console.log(`[ANALYZE-FULL] Starting full analysis: ${req.file.originalname}`);
 
-    // 1. Transcribe with HuggingFace Whisper API
+    // 1. Transcribe with OpenAI Whisper API
     let transcriptionData = null;
     try {
-      const hfResult = await transcribeWithHuggingFace(req.file.buffer);
+      const result = await transcribeWithOpenAI(req.file.buffer, req.file.originalname);
       transcriptionData = {
-        text: hfResult.text || hfResult,
-        language: 'auto-detected'
+        text: result.text,
+        language: result.language,
+        segments: result.segments
       };
-      console.log(`[ANALYZE-FULL] HuggingFace transcription complete`);
-    } catch (hfError) {
-      console.error('[ANALYZE-FULL] HuggingFace error:', hfError.message);
-      transcriptionData = { text: '', error: hfError.message };
+      console.log(`[ANALYZE-FULL] OpenAI transcription complete: ${result.language}`);
+    } catch (openaiError) {
+      console.error('[ANALYZE-FULL] OpenAI error:', openaiError.message);
+      transcriptionData = { text: '', error: openaiError.message };
     }
 
     // Also run Hume emotion analysis
@@ -491,7 +507,7 @@ app.get('/health', async (req, res) => {
   res.json({ 
     status: 'ok',
     apiKeyConfigured: !!process.env.HUME_API_KEY,
-    huggingfaceConfigured: !!process.env.HUGGINGFACE_TOKEN
+    openaiConfigured: !!process.env.OPENAI_API_KEY
   });
 });
 
@@ -506,7 +522,7 @@ app.listen(PORT, () => {
   if (!process.env.HUME_API_KEY) {
     console.warn('⚠️  WARNING: HUME_API_KEY is not configured\n');
   }
-  if (!process.env.HUGGINGFACE_TOKEN) {
-    console.warn('⚠️  WARNING: HUGGINGFACE_TOKEN is not configured (needed for transcription)\n');
+  if (!process.env.OPENAI_API_KEY) {
+    console.warn('⚠️  WARNING: OPENAI_API_KEY is not configured (needed for transcription)\n');
   }
 });
