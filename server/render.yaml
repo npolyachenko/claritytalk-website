@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: claritytalk-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn python_service:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.4"
+      - key: OPENAI_API_KEY
+        sync: false  # Set manually in Render dashboard
