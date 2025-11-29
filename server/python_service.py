@@ -72,10 +72,12 @@ def transcribe():
         logger.info(f"Transcribing audio file: {audio_file.filename}")
         
         # Transcribe with OpenAI Whisper API
+        # Pass file with filename so OpenAI knows the format
+        original_filename = audio_file.filename or f'audio{suffix}'
         with open(temp_path, 'rb') as f:
             kwargs = {
                 'model': 'whisper-1',
-                'file': f,
+                'file': (original_filename, f.read()),
                 'response_format': 'verbose_json'
             }
             if language:
