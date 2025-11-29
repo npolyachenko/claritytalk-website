@@ -19,7 +19,7 @@ async function transcribeWithHuggingFace(audioBuffer) {
   console.log('[HF-WHISPER] Starting transcription...');
   
   const response = await axios.post(
-    'https://api-inference.huggingface.co/models/openai/whisper-large-v3',
+    'https://api-inference.huggingface.co/models/openai/whisper-large-v3-turbo',
     audioBuffer,
     {
       headers: {

@@ -1,5 +1,5 @@
 // Configuration
-const API_BASE_URL = 'https://claritytalk-website-1.onrender.com';
+const API_BASE_URL = 'https://claritytalk-website.onrender.com';
 
 // ============================================
 // Utility Functions (from emotion-demo.js)
@@ -374,7 +374,7 @@ class ConversationAnalyzer {
 
             // Send to full analysis API
             console.log('Sending request to full analysis API...');
-            const response = await fetch(`${API_BASE_URL}/analyze-full`, {
+            const response = await fetch(`${API_BASE_URL}/api/analyze-full`, {
                 method: 'POST',
                 body: formData
             });
