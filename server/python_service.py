@@ -72,18 +72,32 @@ def transcribe():
         logger.info(f"Transcribing audio file: {audio_file.filename}")
         
         # Transcribe with OpenAI Whisper API
-        # Pass file with filename so OpenAI knows the format
-        original_filename = audio_file.filename or f'audio{suffix}'
+        # Map extension to MIME type
+        mime_types = {
+            '.mp3': 'audio/mpeg',
+            '.wav': 'audio/wav',
+            '.m4a': 'audio/mp4',
+            '.mp4': 'audio/mp4',
+            '.ogg': 'audio/ogg',
+            '.oga': 'audio/ogg',
+            '.flac': 'audio/flac',
+            '.webm': 'audio/webm',
+        }
+        content_type = mime_types.get(suffix.lower(), 'audio/mpeg')
+        filename = f'audio{suffix}'
+        
         with open(temp_path, 'rb') as f:
-            kwargs = {
-                'model': 'whisper-1',
-                'file': (original_filename, f.read()),
-                'response_format': 'verbose_json'
-            }
-            if language:
-                kwargs['language'] = language
-            
-            result = client.audio.transcriptions.create(**kwargs)
+            file_content = f.read()
+        
+        kwargs = {
+            'model': 'whisper-1',
+            'file': (filename, file_content, content_type),
+            'response_format': 'verbose_json'
+        }
+        if language:
+            kwargs['language'] = language
+        
+        result = client.audio.transcriptions.create(**kwargs)
         
         # Clean up temp file
         os.unlink(temp_path)
