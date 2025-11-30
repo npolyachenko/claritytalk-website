@@ -12,6 +12,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || 'https://claritytalk-website-1.onrender.com';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -482,11 +483,38 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
       console.error('[ANALYZE-FULL] Hume error (continuing):', humeError.message);
     }
 
+    // 3. Try diarization from Python service
+    let diarizationData = null;
+    try {
+      const FormData = require('form-data');
+      const form = new FormData();
+      form.append('audio', req.file.buffer, {
+        filename: req.file.originalname,
+        contentType: req.file.mimetype
+      });
+
+      console.log('[ANALYZE-FULL] Calling Python service for diarization...');
+      const diarizeResponse = await fetch(PYTHON_SERVICE_URL + '/diarize', {
+        method: 'POST',
+        body: form,
+        headers: form.getHeaders()
+      });
+
+      if (diarizeResponse.ok) {
+        diarizationData = await diarizeResponse.json();
+        console.log(`[ANALYZE-FULL] Diarization complete: ${diarizationData.num_speakers} speakers`);
+      } else {
+        console.log('[ANALYZE-FULL] Diarization not available');
+      }
+    } catch (diarizeError) {
+      console.log('[ANALYZE-FULL] Diarization skipped:', diarizeError.message);
+    }
+
     // Combine results
     const result = {
       success: true,
       transcription: transcriptionData,
-      diarization: null, // Diarization not available without Python service
+      diarization: diarizationData,
       emotion_analysis: humeData
     };
 
