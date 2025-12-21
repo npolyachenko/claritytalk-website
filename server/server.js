@@ -485,6 +485,7 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
         
         // Process emotions
         const emotions = [];
+        const emotionFrames = []; // Store frames with timestamps
         let totalFrames = 0;
         const emotionMap = new Map();
 
@@ -500,6 +501,17 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
                 totalFrames += frames.length;
                 frames.forEach(frame => {
                   if (!frame.emotions) return;
+                  
+                  // Store frame with timestamp
+                  const timeStart = frame.time?.begin || 0;
+                  const timeEnd = frame.time?.end || timeStart;
+                  emotionFrames.push({
+                    start: timeStart,
+                    end: timeEnd,
+                    emotions: frame.emotions.map(e => ({ name: e.name, score: e.score }))
+                  });
+                  
+                  // Also compute overall averages
                   frame.emotions.forEach(emotion => {
                     const current = emotionMap.get(emotion.name) || { sum: 0, count: 0 };
                     emotionMap.set(emotion.name, {
@@ -520,6 +532,7 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
 
         humeData = {
           emotions: emotions.slice(0, 48),
+          emotionFrames, // Include frames with timestamps
           totalFrames
         };
 

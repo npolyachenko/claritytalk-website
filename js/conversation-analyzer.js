@@ -1185,15 +1185,83 @@ class ConversationAnalyzer {
         overview.innerHTML = html;
     }
 
+    // Split emotions by speaker using timestamps
+    getEmotionsBySpeaker() {
+        const emotionFrames = this.analysisData.emotion_analysis?.emotionFrames || [];
+        const diarization = this.analysisData.diarization;
+        
+        console.log('[getEmotionsBySpeaker] emotionFrames length:', emotionFrames.length);
+        console.log('[getEmotionsBySpeaker] diarization:', diarization);
+        console.log('[getEmotionsBySpeaker] emotion_analysis:', this.analysisData.emotion_analysis);
+        
+        if (!emotionFrames.length || !diarization || !diarization.turns) {
+            console.log('[getEmotionsBySpeaker] Returning null - missing data');
+            return null;
+        }
+        
+        const speakers = diarization.speakers || [];
+        const speakerEmotions = {};
+        
+        // Initialize speaker emotion maps
+        speakers.forEach(speaker => {
+            speakerEmotions[speaker] = new Map();
+        });
+        
+        // Assign emotion frames to speakers based on time overlap
+        emotionFrames.forEach(frame => {
+            const frameStart = frame.start || 0;
+            const frameEnd = frame.end || frameStart;
+            const frameDuration = frameEnd - frameStart;
+            
+            // Find overlapping speaker turns
+            diarization.turns.forEach(turn => {
+                const overlapStart = Math.max(frameStart, turn.start);
+                const overlapEnd = Math.min(frameEnd, turn.end);
+                const overlap = Math.max(0, overlapEnd - overlapStart);
+                
+                // If more than 50% of frame overlaps with this turn, assign to this speaker
+                if (overlap > frameDuration * 0.5) {
+                    frame.emotions.forEach(emotion => {
+                        const current = speakerEmotions[turn.speaker].get(emotion.name) || { sum: 0, count: 0 };
+                        speakerEmotions[turn.speaker].set(emotion.name, {
+                            sum: current.sum + emotion.score,
+                            count: current.count + 1
+                        });
+                    });
+                }
+            });
+        });
+        
+        // Convert to sorted arrays
+        const result = {};
+        speakers.forEach(speaker => {
+            const emotions = [];
+            speakerEmotions[speaker].forEach((value, name) => {
+                emotions.push({ name, score: value.sum / value.count });
+            });
+            emotions.sort((a, b) => b.score - a.score);
+            result[speaker] = emotions;
+        });
+        
+        return result;
+    }
+
     async generateVoiceAnalysis() {
         const voiceAnalysis = document.getElementById('voice-analysis-content');
         const emotions = this.analysisData.emotions || [];
         const language = this.analysisData.transcription?.language || 'English';
+        const diarization = this.analysisData.diarization;
         
         if (emotions.length === 0) {
             voiceAnalysis.innerHTML = '<p style="color: var(--text-gray);">No emotional data detected.</p>';
             return;
         }
+
+        // Try to get emotions by speaker
+        const emotionsBySpeaker = this.getEmotionsBySpeaker();
+        const hasSpeakerEmotions = emotionsBySpeaker && Object.keys(emotionsBySpeaker).length > 1;
+        
+        console.log('[Voice Analysis] Emotions by speaker:', hasSpeakerEmotions ? 'Available' : 'Not available');
 
         // Generate summary via API in detected language
         let summary = 'Analyzing emotional content...';
@@ -1219,155 +1287,174 @@ class ConversationAnalyzer {
             summary = generateEmotionSummary(emotions);
         }
         
-        // Generate top-5 emotions list
-        const top5Emotions = emotions.slice(0, 5);
-        let top5HTML = '';
+        let html = '';
         
-        top5Emotions.forEach((emotion, index) => {
-            const percentage = (emotion.score * 100).toFixed(1);
-            const color = getEmotionColor(emotion.name);
-            const formattedName = translateEmotionName(emotion.name, language);
+        // Helper function to generate emotion list HTML
+        const generateEmotionListHTML = (emotionsList, prefix = '') => {
+            let html = '';
+            emotionsList.forEach((emotion, index) => {
+                const percentage = (emotion.score * 100).toFixed(1);
+                const color = getEmotionColor(emotion.name);
+                const formattedName = translateEmotionName(emotion.name, language);
 
-            top5HTML += `
-                <div class="emotion-item" style="margin-bottom: 1.5rem; opacity: 0; animation: slideInLeft 0.5s ease forwards ${index * 0.05}s;">
-                    <div class="emotion-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <span class="emotion-label" style="font-weight: 600; color: var(--text-white); font-size: 1rem;">${formattedName}</span>
-                        <span class="emotion-value" style="font-weight: 700; font-size: 1.1rem; color: var(--primary-teal);">${percentage}%</span>
+                html += `
+                    <div class="emotion-item" style="margin-bottom: 1.5rem; opacity: 0; animation: slideInLeft 0.5s ease forwards ${index * 0.05}s;">
+                        <div class="emotion-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span class="emotion-label" style="font-weight: 600; color: var(--text-white); font-size: 1rem;">${formattedName}</span>
+                            <span class="emotion-value" style="font-weight: 700; font-size: 1.1rem; color: var(--primary-teal);">${percentage}%</span>
+                        </div>
+                        <div class="emotion-bar-container" style="width: 100%; height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; overflow: hidden;">
+                            <div class="emotion-bar" style="height: 100%; width: ${percentage}%; background-color: ${color}; border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                        </div>
                     </div>
-                    <div class="emotion-bar-container" style="width: 100%; height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; overflow: hidden;">
-                        <div class="emotion-bar" style="height: 100%; width: ${percentage}%; background-color: ${color}; border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-                    </div>
-                </div>
-            `;
-        });
-
-        // Generate top-15 emotions list (for expanded view)
-        const top15Emotions = emotions.slice(0, 15);
-        let top15HTML = '';
+                `;
+            });
+            return html;
+        };
         
-        top15Emotions.forEach((emotion, index) => {
-            const percentage = (emotion.score * 100).toFixed(1);
-            const color = getEmotionColor(emotion.name);
-            const formattedName = translateEmotionName(emotion.name, language);
-
-            top15HTML += `
-                <div class="emotion-item" style="margin-bottom: 1.5rem; opacity: 0; animation: slideInLeft 0.5s ease forwards ${index * 0.05}s;">
-                    <div class="emotion-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <span class="emotion-label" style="font-weight: 600; color: var(--text-white); font-size: 1rem;">${formattedName}</span>
-                        <span class="emotion-value" style="font-weight: 700; font-size: 1.1rem; color: var(--primary-teal);">${percentage}%</span>
-                    </div>
-                    <div class="emotion-bar-container" style="width: 100%; height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; overflow: hidden;">
-                        <div class="emotion-bar" style="height: 100%; width: ${percentage}%; background-color: ${color}; border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-                    </div>
-                </div>
-            `;
-        });
-
-        const html = `
+        // Show general summary
+        html += `
             <div class="emotion-summary" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 4px solid var(--primary-orange); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 8px;">
                 <h3 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-orange); font-size: 1.25rem;">Voice Analysis</h3>
                 <p style="color: var(--text-white); line-height: 1.7; margin-bottom: 0; font-size: 1rem;">${summary}</p>
             </div>
-            
-            <button class="toggle-top5" id="toggleTop5Btn" style="background: var(--primary-teal); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; width: 100%; margin-bottom: 1rem; transition: all 0.3s ease;">
-                👁️ Show Top 5 Emotions
-            </button>
-            
-            <div class="emotion-top5-container collapsed" id="emotionTop5Container" style="max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.5s ease-in-out, opacity 0.3s ease, margin-bottom 0.3s ease;">
-                <div class="emotion-legend" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 0.75rem; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div style="width: 16px; height: 16px; background: #4CAF50; border-radius: 3px;"></div>
-                        <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Позитивные' : 'Positive'}</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div style="width: 16px; height: 16px; background: #f44336; border-radius: 3px;"></div>
-                        <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Негативные' : 'Negative'}</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div style="width: 16px; height: 16px; background: #2196F3; border-radius: 3px;"></div>
-                        <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Нейтральные' : 'Neutral'}</span>
-                    </div>
-                </div>
-                <h4 style="color: var(--primary-teal); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.15rem;">Top 5 Detected Emotions</h4>
-                <div class="emotions-list-top5" id="emotionsTop5">
-                    ${top5HTML}
-                </div>
-            </div>
-            
-            <button class="toggle-details" id="toggleDetailsBtn" style="background: var(--primary-orange); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; width: 100%; margin-bottom: 1rem; transition: all 0.3s ease; display: none;">
-                📊 Show More Emotions (Top 15)
-            </button>
-            
-            <div class="emotion-details collapsed" id="emotionDetails" style="max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.5s ease-in-out, opacity 0.3s ease, margin-top 0.3s ease;">
-                <h4 style="color: var(--primary-teal); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.15rem;">Extended Emotion Breakdown (Top 15)</h4>
-                <p class="results-description" style="color: var(--text-gray); font-size: 0.95rem; margin-bottom: 1.5rem;">Showing all ${Math.min(15, emotions.length)} most prominent emotions detected in the conversation.</p>
-                <div class="emotions-list">
-                    ${top15HTML}
-                </div>
-            </div>
         `;
+        
+        // Speaker colors
+        const speakerColors = ['var(--primary-teal)', 'var(--primary-orange)', '#9b59b6', '#3498db'];
+        const speakerBgColors = ['rgba(0, 204, 192, 0.1)', 'rgba(255, 153, 51, 0.1)', 'rgba(155, 89, 182, 0.1)', 'rgba(52, 152, 219, 0.1)'];
+        
+        // Show emotions by speaker if available
+        if (hasSpeakerEmotions && diarization) {
+            const speakers = diarization.speakers || [];
+            
+            // Single toggle button for all speakers
+            html += `
+                <button class="toggle-all-speakers" id="toggleAllSpeakersBtn" style="background: var(--primary-teal); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; width: 100%; margin-bottom: 1rem; transition: all 0.3s ease;">
+                    👥 Show Speaker Emotions
+                </button>
+                
+                <div class="all-speakers-container collapsed" id="allSpeakersContainer" style="max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.5s ease-in-out, opacity 0.3s ease;">
+                    <div class="emotion-legend" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 0.75rem; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 16px; height: 16px; background: #4CAF50; border-radius: 3px;"></div>
+                            <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Позитивные' : 'Positive'}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 16px; height: 16px; background: #f44336; border-radius: 3px;"></div>
+                            <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Негативные' : 'Negative'}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 16px; height: 16px; background: #2196F3; border-radius: 3px;"></div>
+                            <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Нейтральные' : 'Neutral'}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+            `;
+            
+            speakers.forEach((speaker, speakerIndex) => {
+                const speakerNum = parseInt(speaker.replace('SPEAKER_', '')) + 1;
+                const color = speakerColors[(speakerNum - 1) % speakerColors.length];
+                const bgColor = speakerBgColors[(speakerNum - 1) % speakerBgColors.length];
+                const speakerEmotions = emotionsBySpeaker[speaker] || [];
+                const top5Speaker = speakerEmotions.slice(0, 5);
+                
+                if (top5Speaker.length === 0) return;
+                
+                html += `
+                    <div style="background: ${bgColor}; border: 2px solid ${color}; border-radius: 12px; padding: 1.5rem;">
+                        <h4 style="margin-top: 0; margin-bottom: 1.5rem; color: ${color}; font-size: 1.1rem; text-align: center;">👤 Speaker ${speakerNum}</h4>
+                        ${generateEmotionListHTML(top5Speaker)}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        } else {
+            // Fallback: show overall emotions
+            const top5Emotions = emotions.slice(0, 5);
+            const top5HTML = generateEmotionListHTML(top5Emotions);
+            
+            html += `
+                <button class="toggle-top5" id="toggleTop5Btn" style="background: var(--primary-teal); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; width: 100%; margin-bottom: 1rem; transition: all 0.3s ease;">
+                    👁️ Show Top 5 Emotions
+                </button>
+                
+                <div class="emotion-top5-container collapsed" id="emotionTop5Container" style="max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.5s ease-in-out, opacity 0.3s ease, margin-bottom 0.3s ease;">
+                    <div class="emotion-legend" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 0.75rem; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 16px; height: 16px; background: #4CAF50; border-radius: 3px;"></div>
+                            <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Позитивные' : 'Positive'}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 16px; height: 16px; background: #f44336; border-radius: 3px;"></div>
+                            <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Негативные' : 'Negative'}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 16px; height: 16px; background: #2196F3; border-radius: 3px;"></div>
+                            <span style="color: var(--text-gray); font-size: 0.85rem;">${language === 'Russian' || language === 'ru' ? 'Нейтральные' : 'Neutral'}</span>
+                        </div>
+                    </div>
+                    <h4 style="color: var(--primary-teal); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.15rem;">Top 5 Detected Emotions</h4>
+                    <div class="emotions-list-top5" id="emotionsTop5">
+                        ${top5HTML}
+                    </div>
+                </div>
+            `;
+        }
         
         voiceAnalysis.innerHTML = html;
 
-        // Add toggle functionality for top-5
-        const toggleTop5Btn = document.getElementById('toggleTop5Btn');
-        const top5Container = document.getElementById('emotionTop5Container');
-        const toggleDetailsBtn = document.getElementById('toggleDetailsBtn');
-        const detailsDiv = document.getElementById('emotionDetails');
-        
-        if (toggleTop5Btn && top5Container) {
-            toggleTop5Btn.addEventListener('click', () => {
-                const isCollapsed = top5Container.classList.contains('collapsed');
-                
-                if (isCollapsed) {
-                    top5Container.classList.remove('collapsed');
-                    top5Container.style.maxHeight = '1500px';
-                    top5Container.style.opacity = '1';
-                    top5Container.style.marginBottom = '1rem';
-                    toggleTop5Btn.textContent = '🔼 Hide Top 5';
-                    // Show the "Show More" button
-                    if (toggleDetailsBtn) {
-                        toggleDetailsBtn.style.display = 'block';
+        // Add event listeners for single toggle button
+        if (hasSpeakerEmotions && diarization) {
+            const toggleBtn = document.getElementById('toggleAllSpeakersBtn');
+            const container = document.getElementById('allSpeakersContainer');
+            
+            if (toggleBtn && container) {
+                toggleBtn.addEventListener('click', () => {
+                    const isCollapsed = container.classList.contains('collapsed');
+                    
+                    if (isCollapsed) {
+                        container.classList.remove('collapsed');
+                        container.style.maxHeight = '2000px';
+                        container.style.opacity = '1';
+                        toggleBtn.textContent = '🔼 Hide Speaker Emotions';
+                    } else {
+                        container.classList.add('collapsed');
+                        container.style.maxHeight = '0';
+                        container.style.opacity = '0';
+                        toggleBtn.textContent = '👥 Show Speaker Emotions';
                     }
-                } else {
-                    top5Container.classList.add('collapsed');
-                    top5Container.style.maxHeight = '0';
-                    top5Container.style.opacity = '0';
-                    top5Container.style.marginBottom = '0';
-                    toggleTop5Btn.textContent = '👁️ Show Top 5 Emotions';
-                    // Hide the "Show More" button and collapse details if open
-                    if (toggleDetailsBtn) {
-                        toggleDetailsBtn.style.display = 'none';
+                });
+            }
+        } else {
+            // Event listeners for fallback overall emotions view
+            const toggleTop5Btn = document.getElementById('toggleTop5Btn');
+            const top5Container = document.getElementById('emotionTop5Container');
+            
+            if (toggleTop5Btn && top5Container) {
+                toggleTop5Btn.addEventListener('click', () => {
+                    const isCollapsed = top5Container.classList.contains('collapsed');
+                    
+                    if (isCollapsed) {
+                        top5Container.classList.remove('collapsed');
+                        top5Container.style.maxHeight = '1500px';
+                        top5Container.style.opacity = '1';
+                        top5Container.style.marginBottom = '1rem';
+                        toggleTop5Btn.textContent = '🔼 Hide Top 5';
+                    } else {
+                        top5Container.classList.add('collapsed');
+                        top5Container.style.maxHeight = '0';
+                        top5Container.style.opacity = '0';
+                        top5Container.style.marginBottom = '0';
+                        toggleTop5Btn.textContent = '👁️ Show Top 5 Emotions';
                     }
-                    if (detailsDiv && !detailsDiv.classList.contains('collapsed')) {
-                        detailsDiv.classList.add('collapsed');
-                        detailsDiv.style.maxHeight = '0';
-                        detailsDiv.style.opacity = '0';
-                        detailsDiv.style.marginTop = '0';
-                    }
-                }
-            });
-        }
-        
-        // Add toggle functionality for top-15
-        if (toggleDetailsBtn && detailsDiv) {
-            toggleDetailsBtn.addEventListener('click', () => {
-                const isCollapsed = detailsDiv.classList.contains('collapsed');
-                
-                if (isCollapsed) {
-                    detailsDiv.classList.remove('collapsed');
-                    detailsDiv.style.maxHeight = '3000px';
-                    detailsDiv.style.opacity = '1';
-                    detailsDiv.style.marginTop = '1rem';
-                    toggleDetailsBtn.textContent = '🔼 Hide Extended List';
-                } else {
-                    detailsDiv.classList.add('collapsed');
-                    detailsDiv.style.maxHeight = '0';
-                    detailsDiv.style.opacity = '0';
-                    detailsDiv.style.marginTop = '0';
-                    toggleDetailsBtn.textContent = '📊 Show More Emotions (Top 15)';
-                }
-            });
+                });
+            }
         }
 
         // Add animation keyframes if not already present
