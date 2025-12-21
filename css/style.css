@@ -102,7 +102,7 @@ body {
 
 /* Hero Section */
 .hero {
-    background: var(--gradient-stress-harmony);
+    background: #2A2A2A !important;
     color: var(--text-white);
     padding: 8rem 0;
     text-align: center;
@@ -117,7 +117,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--gradient-dark);
+    background: transparent;
     z-index: 1;
 }
 
@@ -986,23 +986,11 @@ body {
     animation: pulse 1s ease-in-out infinite;
 }
 
-/* Gradient Background Animation for Hero */
-@keyframes gradient-shift {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
+/* Hero - Dark Gray Background */
 .hero {
-    background: linear-gradient(-45deg, #FF9933, #FF6633, #00CCCC, #00AACC);
-    background-size: 400% 400%;
-    animation: gradient-shift 15s ease infinite;
+    background: #2A2A2A !important;
+    background-size: unset !important;
+    animation: none !important;
 }
 
 /* Scroll Progress Bar */
@@ -1017,22 +1005,48 @@ body {
     transition: width 0.1s ease;
 }
 
-/* Section Title Underline Effect */
+/* Section Title Animated Gradient Line */
+@keyframes gradient-flow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 .section-title::after,
 .section-title-light::after {
     content: '';
     display: block;
-    width: 60px;
-    height: 4px;
-    background: var(--gradient-stress-harmony);
+    width: 350px;
+    max-width: 90%;
+    height: 5px;
+    background: linear-gradient(
+        90deg,
+        var(--primary-teal) 0%,
+        var(--primary-orange) 25%,
+        #9b59b6 50%,
+        var(--primary-orange) 75%,
+        var(--primary-teal) 100%
+    );
+    background-size: 300% 100%;
     margin: 1rem auto 0;
-    border-radius: 2px;
-    transition: width 0.3s ease;
+    border-radius: 10px;
+    animation: gradient-flow 3s ease infinite;
+    box-shadow: 0 2px 10px rgba(255, 153, 51, 0.4);
 }
 
 .section-title:hover::after,
 .section-title-light:hover::after {
-    width: 100px;
+    width: 450px;
+    max-width: 95%;
+    height: 6px;
+    box-shadow: 0 3px 15px rgba(255, 153, 51, 0.6);
+    transition: all 0.3s ease;
 }
 
 /* Nav Menu Hover Effect */

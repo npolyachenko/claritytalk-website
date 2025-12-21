@@ -214,7 +214,26 @@
             align-items: center;
             gap: 1rem;
             opacity: 0.5;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s ease;
+        }
+
+        /* Pending state - grey */
+        .progress-step .step-title {
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .progress-step .step-description {
+            color: #555;
+            transition: color 0.3s ease;
+        }
+
+        .progress-step .step-status {
+            color: #666;
+        }
+
+        .progress-step .step-icon {
+            filter: grayscale(0.8) brightness(0.7);
         }
 
         .progress-step.active {
@@ -222,9 +241,44 @@
             border-color: var(--primary-teal);
         }
 
+        .progress-step.active .step-title,
+        .progress-step.active .step-description {
+            color: var(--primary-teal);
+        }
+
         .progress-step.completed {
             opacity: 1;
-            border-color: var(--primary-orange);
+            border-color: #333;
+        }
+
+        .progress-step.completed .step-title,
+        .progress-step.completed .step-description {
+            color: #333;
+        }
+
+        .progress-step.completed .step-icon {
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+
+        .step-status {
+            font-size: 1.2rem;
+            min-width: 2rem;
+            text-align: center;
+        }
+
+        .progress-step.completed .step-status {
+            color: #333;
+        }
+
+        .progress-step.active .step-status {
+            color: var(--primary-teal);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .step-icon {
@@ -235,7 +289,7 @@
         }
 
         .progress-step.active .step-icon {
-            filter: grayscale(0) drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
+            filter: grayscale(0) drop-shadow(0 0 8px rgba(0, 255, 255, 0.8)) !important;
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
             animation: brainPulse 1.5s ease-in-out infinite;
         }
@@ -690,36 +744,41 @@
             </h2>
             
             <div class="progress-steps">
-                <div class="progress-step" id="step-upload">
-                    <div class="step-icon">📤</div>
+                <!-- Processing sub-steps -->
+                <div class="progress-step" id="step-transcription">
+                    <div class="step-icon">📝</div>
                     <div class="step-content">
-                        <div class="step-title">Uploading</div>
-                        <div class="step-description">Preparing your audio file...</div>
+                        <div class="step-title">Transcribing Audio</div>
+                        <div class="step-description">Converting speech to text...</div>
                     </div>
+                    <div class="step-status" id="status-transcription">⏳</div>
                 </div>
 
-                <div class="progress-step" id="step-processing">
-                    <div class="step-icon">🎵</div>
+                <div class="progress-step" id="step-diarization">
+                    <div class="step-icon">👥</div>
                     <div class="step-content">
-                        <div class="step-title">Processing Audio</div>
-                        <div class="step-description">Analyzing voice patterns and emotions...</div>
+                        <div class="step-title">Speaker Detection</div>
+                        <div class="step-description">Identifying who is speaking...</div>
                     </div>
+                    <div class="step-status" id="status-diarization">⏳</div>
                 </div>
 
-                <div class="progress-step" id="step-analyzing">
-                    <div class="step-icon">🧠</div>
+                <div class="progress-step" id="step-emotions">
+                    <div class="step-icon">🎭</div>
                     <div class="step-content">
-                        <div class="step-title">Analyzing Communication</div>
-                        <div class="step-description">Detecting conversation dynamics...</div>
+                        <div class="step-title">Emotion Analysis</div>
+                        <div class="step-description">Analyzing voice patterns...</div>
                     </div>
+                    <div class="step-status" id="status-emotions">⏳</div>
                 </div>
 
                 <div class="progress-step" id="step-generating">
                     <div class="step-icon">📊</div>
                     <div class="step-content">
                         <div class="step-title">Generating Report</div>
-                        <div class="step-description">Creating your personalized insights...</div>
+                        <div class="step-description">Creating your insights...</div>
                     </div>
+                    <div class="step-status" id="status-generating">⏳</div>
                 </div>
             </div>
 
@@ -759,20 +818,20 @@
                 <div id="transcription-content"></div>
             </div>
 
-            <!-- Speaker Diarization Section -->
+            <!-- Speaker Analysis Section -->
             <div class="report-section" id="diarization-section" style="display: none;">
                 <h2 class="section-title">
                     <span class="section-icon">👥</span>
-                    Speaker Identification
+                    Speaker Analysis
                 </h2>
                 <div id="diarization-content"></div>
             </div>
 
-            <!-- Voice Analysis Section -->
+            <!-- Emotion Analysis Section -->
             <div class="report-section" id="voice-analysis-section">
                 <h2 class="section-title">
-                    <span class="section-icon">🎤</span>
-                    Voice & Emotion Analysis
+                    <span class="section-icon">😊</span>
+                    Emotion Analysis
                 </h2>
                 <div id="voice-analysis-content"></div>
             </div>
@@ -806,6 +865,6 @@
         </div>
     </footer>
 
-    <script src="js/conversation-analyzer.js"></script>
+    <script src="js/conversation-analyzer.js?v=19"></script>
 </body>
 </html>
