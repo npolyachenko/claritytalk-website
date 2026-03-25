@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const multer = require('multer');
-const { HumeClient } = require('hume');
+const { HumeClient } = require('hume'); // For TTS only
 const fs = require('fs');
 const path = require('path');
 const OpenAI = require('openai');
@@ -20,10 +20,15 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
+// Initialize Hume AI client (for TTS only)
+const humeClient = new HumeClient({
+  apiKey: process.env.HUME_API_KEY
+});
+
 // OpenAI Whisper transcription function
 async function transcribeWithOpenAI(audioBuffer, filename) {
   console.log('[OPENAI-WHISPER] Starting transcription...');
-  
+
   // Create a temporary file
   const tempDir = path.join(__dirname, 'temp');
   if (!fs.existsSync(tempDir)) {
@@ -31,19 +36,19 @@ async function transcribeWithOpenAI(audioBuffer, filename) {
   }
   const tempPath = path.join(tempDir, `whisper-${Date.now()}-${filename}`);
   fs.writeFileSync(tempPath, audioBuffer);
-  
+
   try {
     const transcription = await openai.audio.transcriptions.create({
       file: fs.createReadStream(tempPath),
       model: 'whisper-1',
       response_format: 'verbose_json'
     });
-    
+
     console.log('[OPENAI-WHISPER] Transcription complete');
-    
+
     // Clean up temp file
     fs.unlinkSync(tempPath);
-    
+
     return transcription;
   } catch (error) {
     // Clean up on error
@@ -52,10 +57,212 @@ async function transcribeWithOpenAI(audioBuffer, filename) {
   }
 }
 
-// Initialize Hume AI client
-const humeClient = new HumeClient({
-  apiKey: process.env.HUME_API_KEY
-});
+// All 48 emotions from Hume AI taxonomy (kept for compatibility)
+const EMOTION_NAMES = [
+  'Admiration', 'Adoration', 'Aesthetic Appreciation', 'Amusement', 'Anger',
+  'Annoyance', 'Anxiety', 'Awe', 'Awkwardness', 'Boredom',
+  'Calmness', 'Concentration', 'Confusion', 'Contemplation', 'Contempt',
+  'Contentment', 'Craving', 'Desire', 'Determination', 'Disappointment',
+  'Disapproval', 'Disgust', 'Distress', 'Doubt', 'Ecstasy',
+  'Embarrassment', 'Empathic Pain', 'Enthusiasm', 'Entrancement', 'Envy',
+  'Excitement', 'Fear', 'Gratitude', 'Guilt', 'Horror',
+  'Interest', 'Joy', 'Love', 'Nostalgia', 'Pain',
+  'Pride', 'Realization', 'Relief', 'Romance', 'Sadness',
+  'Satisfaction', 'Shame', 'Surprise (positive)', 'Surprise (negative)', 'Sympathy',
+  'Tiredness', 'Triumph'
+];
+
+const POSITIVE_EMOTIONS = [
+  'Joy', 'Contentment', 'Interest', 'Excitement', 'Admiration',
+  'Love', 'Pride', 'Amusement', 'Satisfaction', 'Relief',
+  'Gratitude', 'Romance', 'Triumph'
+];
+
+const NEGATIVE_EMOTIONS = [
+  'Anger', 'Annoyance', 'Anxiety', 'Fear', 'Disgust',
+  'Sadness', 'Distress', 'Pain', 'Contempt', 'Embarrassment',
+  'Shame', 'Horror', 'Disappointment'
+];
+
+// GPT-based emotion analysis (same as iOS app)
+async function analyzeEmotionsWithGPT(transcriptData) {
+  console.log('[GPT-EMOTIONS] Starting emotion analysis...');
+
+  if (!transcriptData || !transcriptData.segments || transcriptData.segments.length === 0) {
+    console.log('[GPT-EMOTIONS] No segments to analyze');
+    return { timeline: [], all_emotions: [], emotion_frames: [], total_frames: 0, emotional_tone: 'neutral' };
+  }
+
+  const segments = transcriptData.segments;
+  const language = transcriptData.language || 'en';
+
+  // Build segments for analysis
+  const segmentsForAnalysis = segments
+    .map((seg, i) => ({
+      id: i,
+      start: Math.round((seg.start || 0) * 100) / 100,
+      end: Math.round((seg.end || seg.start || 0) * 100) / 100,
+      text: (seg.text || '').trim()
+    }))
+    .filter(seg => seg.text);
+
+  if (segmentsForAnalysis.length === 0) {
+    return { timeline: [], all_emotions: [], emotion_frames: [], total_frames: 0, emotional_tone: 'neutral' };
+  }
+
+  const systemPrompt = `You are an expert emotion analyst. Analyze the emotional content of speech transcript segments.
+
+For each segment, identify the top 5-8 most relevant emotions and score them from 0.0 to 1.0.
+
+Use these emotion names (from the standard 48-emotion taxonomy):
+${EMOTION_NAMES.join(', ')}
+
+Scoring guidelines:
+- 0.7-1.0: Very strong, clearly dominant emotion
+- 0.4-0.7: Moderate, clearly present
+- 0.1-0.4: Subtle, implied or background emotion
+- Only include emotions scoring above 0.05
+
+Return JSON format:
+{
+  "segments": [
+    {
+      "id": 0,
+      "emotions": [
+        {"name": "Interest", "score": 0.65},
+        {"name": "Calmness", "score": 0.45}
+      ]
+    }
+  ]
+}`;
+
+  try {
+    // Process in batches of 20 segments
+    const batchSize = 20;
+    const allFrameResults = [];
+
+    for (let batchStart = 0; batchStart < segmentsForAnalysis.length; batchStart += batchSize) {
+      const batch = segmentsForAnalysis.slice(batchStart, batchStart + batchSize);
+
+      const lines = [`Analyze emotions in these speech segments (language: ${language}):\n`];
+      batch.forEach(seg => {
+        lines.push(`[${seg.id}] (${seg.start}s - ${seg.end}s): "${seg.text}"`);
+      });
+      const userPrompt = lines.join('\n');
+
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.3,
+        response_format: { type: 'json_object' }
+      });
+
+      const resultText = response.choices[0].message.content;
+      const batchResult = JSON.parse(resultText);
+      allFrameResults.push(...(batchResult.segments || []));
+    }
+
+    // Build results in the same format as iOS app
+    const timeline = [];
+    const emotionFrames = [];
+    const emotionAggregates = {};
+    let totalFrames = 0;
+
+    // Map original segments by ID
+    const segMap = {};
+    segmentsForAnalysis.forEach(s => { segMap[s.id] = s; });
+
+    allFrameResults.forEach(gptSeg => {
+      const segId = gptSeg.id;
+      const emotions = gptSeg.emotions || [];
+      const orig = segMap[segId];
+
+      if (!emotions.length || !orig) return;
+
+      const frameStart = orig.start;
+      const frameEnd = orig.end;
+      totalFrames++;
+
+      // Pad with zero scores for all 48 emotions
+      const emotionScores = {};
+      emotions.forEach(e => { emotionScores[e.name] = e.score; });
+
+      const fullEmotions = EMOTION_NAMES.map(name => ({
+        name,
+        score: emotionScores[name] || 0.0
+      }));
+
+      emotionFrames.push({
+        start: frameStart,
+        end: frameEnd,
+        emotions: fullEmotions
+      });
+
+      // Top emotion for timeline
+      if (emotions.length > 0) {
+        const topEmotion = emotions.reduce((a, b) => a.score > b.score ? a : b);
+        timeline.push({
+          emotion: topEmotion.name,
+          confidence: topEmotion.score,
+          timestamp: frameStart
+        });
+      }
+
+      // Aggregate scores
+      fullEmotions.forEach(e => {
+        if (!emotionAggregates[e.name]) {
+          emotionAggregates[e.name] = { sum: 0, count: 0 };
+        }
+        emotionAggregates[e.name].sum += e.score;
+        emotionAggregates[e.name].count++;
+      });
+    });
+
+    // Calculate averages
+    const allEmotions = [];
+    Object.entries(emotionAggregates).forEach(([name, data]) => {
+      const avgScore = data.count > 0 ? data.sum / data.count : 0;
+      allEmotions.push({ name, score: avgScore });
+    });
+    allEmotions.sort((a, b) => b.score - a.score);
+
+    // Calculate emotional tone
+    const positiveScore = allEmotions
+      .filter(e => POSITIVE_EMOTIONS.includes(e.name))
+      .reduce((sum, e) => sum + e.score, 0);
+    const negativeScore = allEmotions
+      .filter(e => NEGATIVE_EMOTIONS.includes(e.name))
+      .reduce((sum, e) => sum + e.score, 0);
+
+    let emotionalTone = 'neutral';
+    if (positiveScore > negativeScore && positiveScore > 0.3) {
+      emotionalTone = 'positive';
+    } else if (negativeScore > positiveScore && negativeScore > 0.3) {
+      emotionalTone = 'negative';
+    }
+
+    console.log(`[GPT-EMOTIONS] Analysis complete: ${totalFrames} segments, tone=${emotionalTone}`);
+
+    return {
+      timeline,
+      all_emotions: allEmotions.slice(0, 48),
+      emotion_frames: emotionFrames,
+      total_frames: totalFrames,
+      emotional_tone: emotionalTone,
+      // Also include old format for backwards compatibility
+      emotions: allEmotions.slice(0, 48),
+      emotionFrames,
+      totalFrames
+    };
+
+  } catch (error) {
+    console.error('[GPT-EMOTIONS] Error:', error.message);
+    return { timeline: [], all_emotions: [], emotion_frames: [], total_frames: 0, emotional_tone: 'neutral', error: error.message };
+  }
+}
 
 // Middleware
 app.use(cors());
@@ -139,7 +346,7 @@ app.post('/api/tts', async (req, res) => {
 
 /**
  * POST /api/analyze-voice
- * Analyze audio file for emotional characteristics
+ * Analyze audio file for emotional characteristics using GPT
  * Form-data: audio file
  */
 app.post('/api/analyze-voice', upload.single('audio'), async (req, res) => {
@@ -151,134 +358,33 @@ app.post('/api/analyze-voice', upload.single('audio'), async (req, res) => {
     console.log(`[ANALYZE] Analyzing audio file: ${req.file.originalname}`);
     console.log(`[ANALYZE] File size: ${(req.file.size / 1024).toFixed(2)} KB`);
 
-    // Create a temporary file from buffer
-    const tempDir = path.join(__dirname, 'temp');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir);
-    }
+    // Step 1: Transcribe with Whisper
+    console.log('[ANALYZE] Transcribing with Whisper...');
+    const transcription = await transcribeWithOpenAI(req.file.buffer, req.file.originalname);
 
-    const tempFilePath = path.join(tempDir, `upload-${Date.now()}-${req.file.originalname}`);
-    fs.writeFileSync(tempFilePath, req.file.buffer);
+    const transcriptData = {
+      text: transcription.text,
+      language: transcription.language,
+      segments: transcription.segments
+    };
 
-    try {
-      // Configure models for prosody analysis
-      const models = {
-        prosody: {}
-      };
+    // Step 2: Analyze emotions with GPT
+    console.log('[ANALYZE] Analyzing emotions with GPT...');
+    const emotionResult = await analyzeEmotionsWithGPT(transcriptData);
 
-      console.log('[ANALYZE] Starting Hume batch job (local file)...');
-      console.log('[ANALYZE] Temp file path:', tempFilePath);
-      console.log('[ANALYZE] File exists:', fs.existsSync(tempFilePath));
+    console.log(`[ANALYZE] Found ${emotionResult.emotions?.length || 0} emotions`);
 
-      // Use official SDK helper for local files
-      const job = await humeClient.expressionMeasurement.batch.startInferenceJobFromLocalFile({
-        file: [fs.createReadStream(tempFilePath)],
-        json: { models }
-      });
-
-      console.log('[ANALYZE] Job object:', JSON.stringify(job, null, 2));
-      const jobId = job.jobId;
-      console.log(`[ANALYZE] Job ID: ${jobId}`);
-
-      // Poll for completion
-      let status = 'QUEUED';
-      let attempts = 0;
-      const maxAttempts = 60; // 60 attempts = ~2 minutes max wait
-      
-      while (status !== 'COMPLETED' && status !== 'FAILED' && attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
-        
-        const jobDetails = await humeClient.expressionMeasurement.batch.getJobDetails(jobId);
-        status = jobDetails.state.status;
-        
-        console.log(`[ANALYZE] Status: ${status} (attempt ${attempts + 1}/${maxAttempts})`);
-        attempts++;
-        
-        if (status === 'FAILED') {
-          throw new Error('Hume job failed: ' + jobDetails.state.message);
-        }
-      }
-
-      if (status !== 'COMPLETED') {
-        throw new Error('Analysis timeout - job did not complete in time');
-      }
-
-      // Fetch predictions using SDK
-      console.log('[ANALYZE] Fetching predictions...');
-      const predictions = await humeClient.expressionMeasurement.batch.getJobPredictions(jobId);
-      console.log('[ANALYZE] Raw predictions structure:', JSON.stringify(predictions, null, 2));
-
-      // Process prosody results
-      const emotions = [];
-      let totalFrames = 0;
-
-      if (Array.isArray(predictions) && predictions.length > 0) {
-        // Aggregate across all files, groups, and frames
-        const emotionMap = new Map();
-
-        predictions.forEach(fileResult => {
-          const filePredictions = fileResult.results?.predictions || [];
-
-          filePredictions.forEach(pred => {
-            const prosody = pred.models?.prosody;
-            if (!prosody) return;
-
-            const grouped = prosody.groupedPredictions || prosody.grouped_predictions || [];
-
-            grouped.forEach(group => {
-              const frames = group.predictions || [];
-              totalFrames += frames.length;
-
-              frames.forEach(frame => {
-                if (!frame.emotions) return;
-
-                frame.emotions.forEach(emotion => {
-                  const current = emotionMap.get(emotion.name) || { sum: 0, count: 0 };
-                  emotionMap.set(emotion.name, {
-                    sum: current.sum + emotion.score,
-                    count: current.count + 1
-                  });
-                });
-              });
-            });
-          });
-        });
-
-        // Calculate averages and sort by score
-        emotionMap.forEach((value, name) => {
-          emotions.push({
-            name,
-            score: value.sum / value.count
-          });
-        });
-
-        emotions.sort((a, b) => b.score - a.score);
-      }
-
-      console.log(`[ANALYZE] Found ${emotions.length} emotions (totalFrames=${totalFrames})`);
-      
-      // Clean up temp file
-      fs.unlinkSync(tempFilePath);
-
-      res.json({
-        success: true,
-        emotions: emotions.slice(0, 48), // Return top 48 emotions
-        totalFrames
-      });
-
-    } catch (analysisError) {
-      // Clean up temp file in case of error
-      if (fs.existsSync(tempFilePath)) {
-        fs.unlinkSync(tempFilePath);
-      }
-      throw analysisError;
-    }
+    res.json({
+      success: true,
+      emotions: emotionResult.emotions || [],
+      totalFrames: emotionResult.totalFrames || 0
+    });
 
   } catch (error) {
     console.error('[ANALYZE] Error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to analyze audio',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -377,7 +483,7 @@ app.post('/api/diarize', upload.single('audio'), async (req, res) => {
 
 /**
  * POST /api/analyze-full
- * Full analysis: OpenAI Whisper transcription + Hume emotion analysis
+ * Full analysis: OpenAI Whisper transcription + GPT emotion analysis
  */
 app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
   try {
@@ -442,119 +548,23 @@ app.post('/api/analyze-full', upload.single('audio'), async (req, res) => {
       }
     }
 
-    // Also run Hume emotion analysis
-    let humeData = null;
+    // Run GPT-based emotion analysis (fast, uses transcript text)
+    let emotionData = null;
     try {
-      // Create temp file for Hume
-      const tempDir = path.join(__dirname, 'temp');
-      if (!fs.existsSync(tempDir)) {
-        fs.mkdirSync(tempDir);
+      if (transcriptionData && transcriptionData.segments) {
+        emotionData = await analyzeEmotionsWithGPT(transcriptionData);
+        console.log(`[ANALYZE-FULL] GPT emotions complete: ${emotionData.emotions?.length || 0} emotions`);
       }
-
-      const tempFilePath = path.join(tempDir, `full-${Date.now()}-${req.file.originalname}`);
-      fs.writeFileSync(tempFilePath, req.file.buffer);
-
-      const models = { prosody: {} };
-      const job = await humeClient.expressionMeasurement.batch.startInferenceJobFromLocalFile({
-        file: [fs.createReadStream(tempFilePath)],
-        json: { models }
-      });
-
-      // Poll for completion (20 minutes max for free tier queue)
-      let status = 'QUEUED';
-      let attempts = 0;
-      const maxAttempts = 600; // 600 × 2s = 20 minutes
-      
-      while (status !== 'COMPLETED' && status !== 'FAILED' && attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const jobDetails = await humeClient.expressionMeasurement.batch.getJobDetails(job.jobId);
-        status = jobDetails.state.status;
-        attempts++;
-        
-        if (attempts % 30 === 0) {
-          console.log(`[HUME] Waiting... status: ${status}, ${Math.round(attempts * 2 / 60)}min elapsed`);
-        }
-        
-        if (status === 'FAILED') {
-          throw new Error('Hume job failed');
-        }
-      }
-
-      if (status === 'COMPLETED') {
-        const predictions = await humeClient.expressionMeasurement.batch.getJobPredictions(job.jobId);
-        
-        // Process emotions
-        const emotions = [];
-        const emotionFrames = []; // Store frames with timestamps
-        let totalFrames = 0;
-        const emotionMap = new Map();
-
-        if (Array.isArray(predictions) && predictions.length > 0) {
-          predictions.forEach(fileResult => {
-            const filePredictions = fileResult.results?.predictions || [];
-            filePredictions.forEach(pred => {
-              const prosody = pred.models?.prosody;
-              if (!prosody) return;
-              const grouped = prosody.groupedPredictions || prosody.grouped_predictions || [];
-              grouped.forEach(group => {
-                const frames = group.predictions || [];
-                totalFrames += frames.length;
-                frames.forEach(frame => {
-                  if (!frame.emotions) return;
-                  
-                  // Store frame with timestamp
-                  const timeStart = frame.time?.begin || 0;
-                  const timeEnd = frame.time?.end || timeStart;
-                  emotionFrames.push({
-                    start: timeStart,
-                    end: timeEnd,
-                    emotions: frame.emotions.map(e => ({ name: e.name, score: e.score }))
-                  });
-                  
-                  // Also compute overall averages
-                  frame.emotions.forEach(emotion => {
-                    const current = emotionMap.get(emotion.name) || { sum: 0, count: 0 };
-                    emotionMap.set(emotion.name, {
-                      sum: current.sum + emotion.score,
-                      count: current.count + 1
-                    });
-                  });
-                });
-              });
-            });
-          });
-
-          emotionMap.forEach((value, name) => {
-            emotions.push({ name, score: value.sum / value.count });
-          });
-          emotions.sort((a, b) => b.score - a.score);
-        }
-
-        humeData = {
-          emotions: emotions.slice(0, 48),
-          emotionFrames, // Include frames with timestamps
-          totalFrames
-        };
-
-        console.log(`[ANALYZE-FULL] Hume complete: ${emotions.length} emotions`);
-      }
-
-      // Clean up
-      if (fs.existsSync(tempFilePath)) {
-        fs.unlinkSync(tempFilePath);
-      }
-    } catch (humeError) {
-      console.error('[ANALYZE-FULL] Hume error (continuing):', humeError.message);
+    } catch (emotionError) {
+      console.error('[ANALYZE-FULL] GPT emotion error (continuing):', emotionError.message);
     }
-
-    // Diarization is already handled by Python service /analyze-full endpoint above
 
     // Combine results
     const result = {
       success: true,
       transcription: transcriptionData,
       diarization: diarizationData,
-      emotion_analysis: humeData
+      emotion_analysis: emotionData
     };
 
     console.log(`[ANALYZE-FULL] Complete!`);
@@ -748,10 +758,10 @@ Respond with ONLY the summary text, no JSON, no formatting.`;
 
 // Health check endpoint
 app.get('/health', async (req, res) => {
-  res.json({ 
+  res.json({
     status: 'ok',
-    apiKeyConfigured: !!process.env.HUME_API_KEY,
-    openaiConfigured: !!process.env.OPENAI_API_KEY
+    openaiConfigured: !!process.env.OPENAI_API_KEY,
+    humeTtsConfigured: !!process.env.HUME_API_KEY
   });
 });
 
@@ -759,14 +769,14 @@ app.get('/health', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🚀 ClarityTalk API Server running on port ${PORT}`);
   console.log(`📡 TTS endpoint: http://localhost:${PORT}/api/tts`);
-  console.log(`🎤 Hume emotion analysis: http://localhost:${PORT}/api/analyze-voice`);
+  console.log(`🎤 GPT emotion analysis: http://localhost:${PORT}/api/analyze-voice`);
   console.log(`🔬 Full analysis: http://localhost:${PORT}/api/analyze-full`);
   console.log(`💚 Health check: http://localhost:${PORT}/health\n`);
-  
-  if (!process.env.HUME_API_KEY) {
-    console.warn('⚠️  WARNING: HUME_API_KEY is not configured\n');
-  }
+
   if (!process.env.OPENAI_API_KEY) {
-    console.warn('⚠️  WARNING: OPENAI_API_KEY is not configured (needed for transcription)\n');
+    console.warn('⚠️  WARNING: OPENAI_API_KEY is not configured (needed for transcription & emotions)\n');
+  }
+  if (!process.env.HUME_API_KEY) {
+    console.warn('⚠️  WARNING: HUME_API_KEY is not configured (needed for TTS only)\n');
   }
 });
