@@ -229,6 +229,7 @@ Return JSON format:
         return None
 
 @app.route('/health', methods=['GET'])
+@app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
     return jsonify({
@@ -238,6 +239,7 @@ def health_check():
     })
 
 @app.route('/analyze-full', methods=['POST'])
+@app.route('/api/analyze-full', methods=['POST'])
 def analyze_full():
     """
     Full analysis using AssemblyAI: transcription + speaker diarization
@@ -384,6 +386,7 @@ def analyze_full():
         }), 500
 
 @app.route('/transcribe', methods=['POST'])
+@app.route('/api/transcribe', methods=['POST'])
 def transcribe():
     """
     Simple transcription endpoint (for backwards compatibility)
@@ -428,9 +431,150 @@ def transcribe():
         logger.error(f"Transcription error: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/generate-emotion-summary', methods=['POST'])
+def generate_emotion_summary():
+    """Generate emotion summary using GPT"""
+    try:
+        data = request.get_json()
+        language = data.get('language', 'en')
+        emotions = data.get('emotions', [])
+
+        if not emotions or not openai_client:
+            return jsonify({'success': True, 'summary': ''})
+
+        language_map = {
+            'ru': 'Russian', 'Russian': 'Russian',
+            'en': 'English', 'English': 'English',
+            'es': 'Spanish', 'fr': 'French', 'de': 'German'
+        }
+        target_language = language_map.get(language, 'English')
+
+        top3 = emotions[:3]
+        emotions_list = ', '.join([f"{e['name']} ({int(e['score']*100)}%)" for e in top3])
+
+        prompt = f"""You are analyzing emotional content in a voice conversation.
+
+Top emotions detected: {emotions_list}
+
+Write a 2-3 sentence summary in {target_language} that:
+1. Describes the primary emotional tone
+2. Explains what this emotional combination suggests about the communication style
+3. Mentions any notable secondary emotions
+
+Be professional, insightful, and specific. Write in a natural, flowing style.
+Respond with ONLY the summary text, no JSON, no formatting."""
+
+        response = openai_client.chat.completions.create(
+            model='gpt-4o-mini',
+            messages=[
+                {'role': 'system', 'content': f'You are a voice emotion analyst. Write concise, professional summaries in {target_language}.'},
+                {'role': 'user', 'content': prompt}
+            ],
+            temperature=0.7,
+            max_tokens=200
+        )
+
+        summary = response.choices[0].message.content.strip()
+        return jsonify({'success': True, 'summary': summary})
+
+    except Exception as e:
+        logger.error(f"Emotion summary error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/generate-text-analysis', methods=['POST'])
+def generate_text_analysis():
+    """Generate speaker analysis and recommendations using GPT"""
+    try:
+        data = request.get_json()
+        language = data.get('language', 'en')
+        diarization = data.get('diarization', {})
+        emotions = data.get('emotions', [])
+
+        if not diarization or not emotions or not openai_client:
+            return jsonify({'success': True, 'analysis': {}})
+
+        language_map = {
+            'ru': 'Russian', 'Russian': 'Russian',
+            'en': 'English', 'English': 'English',
+            'es': 'Spanish', 'fr': 'French', 'de': 'German'
+        }
+        target_language = language_map.get(language, 'English')
+
+        speakers = diarization.get('speakers', [])
+        speaker_stats = diarization.get('speaker_stats', {})
+        top_emotions = ', '.join([f"{e['name']} ({int(e['score']*100)}%)" for e in emotions[:5]])
+
+        speaker_context = ''
+        for speaker in speakers:
+            stats = speaker_stats.get(speaker, {})
+            num = int(speaker.replace('SPEAKER_', '')) + 1
+            speaker_context += f"\nSpeaker {num}: {stats.get('percentage', 0)}% of words, {stats.get('words', 0)} words total"
+
+        prompt = f"""You are an expert communication coach analyzing a conversation.
+
+Conversation data:
+- Language: {target_language}
+- Number of speakers: {len(speakers)}
+- Top emotions detected: {top_emotions}
+{speaker_context}
+
+Generate a JSON response in {target_language} with the following structure:
+{{
+  "speaker_insights": [
+    {{
+      "speaker": "Speaker 1",
+      "title": "Brief insight title",
+      "text": "Detailed analysis and recommendation (2-3 sentences)",
+      "type": "balance|pace|volume|positive"
+    }}
+  ],
+  "emotion_insights": [
+    {{
+      "title": "Emotion-based insight title",
+      "text": "Detailed analysis and recommendation (2-3 sentences)",
+      "type": "emotion"
+    }}
+  ],
+  "general_tips": [
+    {{
+      "title": "General communication tip",
+      "text": "Actionable advice (1-2 sentences)",
+      "type": "general"
+    }}
+  ]
+}}
+
+Guidelines:
+- Provide 1-3 speaker-specific insights based on speaking balance, pace, or volume
+- Provide 2-3 emotion-based insights from the top detected emotions
+- Provide 1-2 general communication tips
+- Use appropriate emojis in titles
+- Be specific, actionable, and constructive
+- Write ENTIRELY in {target_language}
+- Return ONLY valid JSON, no markdown formatting"""
+
+        response = openai_client.chat.completions.create(
+            model='gpt-4o-mini',
+            messages=[
+                {'role': 'system', 'content': 'You are a professional communication coach. Always respond with valid JSON only.'},
+                {'role': 'user', 'content': prompt}
+            ],
+            temperature=0.7,
+            response_format={'type': 'json_object'}
+        )
+
+        analysis = json.loads(response.choices[0].message.content)
+        return jsonify({'success': True, 'analysis': analysis})
+
+    except Exception as e:
+        logger.error(f"Text analysis error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 if __name__ == '__main__':
-    logger.info("Starting ClarityTalk Python Service (AssemblyAI)...")
-    
+    logger.info("Starting ClarityTalk Python Service (AssemblyAI + GPT)...")
+
     port = int(os.getenv('PYTHON_PORT', os.getenv('PORT', 5001)))
     
     logger.info("=" * 60)
