@@ -1,4 +1,4 @@
-# OpenAI API
+# OpenAI API (for GPT emotion analysis)
 openai>=1.0.0
 
 # Web Framework

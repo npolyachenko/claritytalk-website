@@ -1,8 +1,8 @@
 // Configuration
-// For local testing use localhost, for production use Render
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://localhost:3001' 
-    : 'https://claritytalk-website.onrender.com';
+// For local testing use localhost, for production use Render Python service
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5001'
+    : 'https://claritytalk-website-1.onrender.com';
 
 // ============================================
 // Utility Functions (from emotion-demo.js)
